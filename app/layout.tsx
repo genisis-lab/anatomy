@@ -38,6 +38,8 @@ export const metadata: Metadata = {
   description:
     "Explore medically detailed 3D organs — heart, brain, lungs, liver, kidneys, eye, intestine, pancreas, and skin — through an elegant, interactive anatomy atelier.",
   applicationName: "Anatomy Atelier",
+  creator: "BuiltWAI",
+  publisher: "BuiltWAI",
   keywords: ["anatomy", "3D anatomy", "human body", "medical education", "interactive learning", "organs"],
   icons: {
     icon: [
