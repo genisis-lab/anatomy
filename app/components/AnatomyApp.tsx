@@ -115,7 +115,7 @@ export function AnatomyApp() {
       <header className="topbar">
         <button className="brand" type="button" onClick={() => selectOrgan("heart")} aria-label="Anatomy Atelier home">
           <strong>Anatomy Atelier<sup>✦</sup></strong>
-          <em>Learn anatomy like an artist</em>
+          <em>Learn anatomy like an artist · a BuiltWAI experience</em>
         </button>
         <nav className="main-nav" aria-label="Primary navigation">
           <button className="active"><Compass size={17} /> Explore</button>
