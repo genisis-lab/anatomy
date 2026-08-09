@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { disposeObject } from "./dispose";
+import { buildProceduralModel } from "./procedural-models";
 
 /** Edge length of the cube every organ is normalised into, so hotspot
  *  coordinates authored in `anatomy-data` mean the same thing for each model. */
@@ -37,6 +38,7 @@ export class AnatomyAssetManager {
 
   /** Warms the HTTP cache so switching organs feels instant. */
   prefetch(url: string) {
+    if (url.startsWith("procedural:")) return;
     if (this.cache.has(url) || this.inflight.has(url)) return;
     void fetch(url, { priority: "low" } as RequestInit).catch(() => {});
   }
@@ -66,11 +68,20 @@ export class AnatomyAssetManager {
   }
 
   private async parse(url: string, onProgress?: (progress: number) => void): Promise<LoadedOrgan> {
-    const gltf = await this.loader.loadAsync(url, (event) => {
-      if (event.total > 0) onProgress?.(event.loaded / event.total);
-    });
-
-    const model = gltf.scene;
+    let model: THREE.Object3D;
+    let animations: THREE.AnimationClip[] = [];
+    if (url.startsWith("procedural:")) {
+      const generated = buildProceduralModel(url.slice("procedural:".length));
+      if (!generated) throw new Error(`Unknown procedural anatomy model: ${url}`);
+      model = generated;
+      onProgress?.(1);
+    } else {
+      const gltf = await this.loader.loadAsync(url, (event) => {
+        if (event.total > 0) onProgress?.(event.loaded / event.total);
+      });
+      model = gltf.scene;
+      animations = gltf.animations;
+    }
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
@@ -146,9 +157,9 @@ export class AnatomyAssetManager {
     });
 
     let mixer: THREE.AnimationMixer | null = null;
-    if (gltf.animations.length) {
+    if (animations.length) {
       mixer = new THREE.AnimationMixer(model);
-      gltf.animations.forEach((clip) => mixer?.clipAction(clip).play());
+      animations.forEach((clip) => mixer?.clipAction(clip).play());
     }
 
     return { url, pivot, meshes, mixer };

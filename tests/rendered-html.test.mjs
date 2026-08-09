@@ -30,6 +30,20 @@ test("server-renders the complete Anatomy Atelier experience", async () => {
   assert.match(html, /Organ library/);
   assert.match(html, /Start guided lesson/);
   assert.match(html, /Interactive education, not medical advice/);
+  for (const specimen of [
+    "Stomach",
+    "Skeleton",
+    "Muscles",
+    "Ear",
+    "Spinal Cord",
+    "Bladder",
+    "Thyroid",
+    "Spleen &amp; Lymph Nodes",
+    "Uterus &amp; Ovaries",
+    "Testes &amp; Prostate",
+    "Gallbladder",
+    "Airway &amp; Diaphragm",
+  ]) assert.match(html, new RegExp(specimen));
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
 });
 

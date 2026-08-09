@@ -1,5 +1,6 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { ORGAN_IDS } from "../app/lib/organ-ids";
 
 type Env = {
   ASSETS: Fetcher;
@@ -13,7 +14,7 @@ type Env = {
   };
 };
 
-const ORGAN_IDS = new Set(["heart", "brain", "lungs", "liver", "kidneys", "eyeball", "intestine", "pancreas", "skin"]);
+const ORGAN_ID_SET = new Set<string>(ORGAN_IDS);
 const EVENT_NAMES = new Set([
   "app_opened",
   "view_changed",
@@ -101,18 +102,18 @@ function sameOriginWrite(request: Request) {
 function normalizedState(value: unknown) {
   const data = value && typeof value === "object" ? value as Record<string, unknown> : {};
   const organArray = (candidate: unknown) => Array.isArray(candidate)
-    ? [...new Set(candidate.filter((item): item is string => typeof item === "string" && ORGAN_IDS.has(item)))].slice(0, ORGAN_IDS.size)
+    ? [...new Set(candidate.filter((item): item is string => typeof item === "string" && ORGAN_ID_SET.has(item)))].slice(0, ORGAN_IDS.length)
     : [];
   const notes: Record<string, string> = {};
   if (data.notes && typeof data.notes === "object") {
     for (const [organId, note] of Object.entries(data.notes as Record<string, unknown>)) {
-      if (ORGAN_IDS.has(organId) && typeof note === "string") notes[organId] = note.slice(0, 10_000);
+      if (ORGAN_ID_SET.has(organId) && typeof note === "string") notes[organId] = note.slice(0, 10_000);
     }
   }
   const quizScores: Record<string, number> = {};
   if (data.quizScores && typeof data.quizScores === "object") {
     for (const [organId, score] of Object.entries(data.quizScores as Record<string, unknown>)) {
-      if (ORGAN_IDS.has(organId) && typeof score === "number" && Number.isFinite(score)) quizScores[organId] = Math.max(0, Math.min(3, Math.round(score)));
+      if (ORGAN_ID_SET.has(organId) && typeof score === "number" && Number.isFinite(score)) quizScores[organId] = Math.max(0, Math.min(3, Math.round(score)));
     }
   }
   return {
@@ -156,7 +157,7 @@ async function handleEvent(request: Request, env: Env, ctx: ExecutionContext) {
   if (!payload || typeof payload !== "object") return json({ error: "Invalid event" }, { status: 400 });
   const candidate = payload as Record<string, unknown>;
   if (typeof candidate.event !== "string" || !EVENT_NAMES.has(candidate.event)) return json({ error: "Unknown event" }, { status: 400 });
-  const organId = typeof candidate.organId === "string" && ORGAN_IDS.has(candidate.organId) ? candidate.organId : null;
+  const organId = typeof candidate.organId === "string" && ORGAN_ID_SET.has(candidate.organId) ? candidate.organId : null;
   const metadata = candidate.metadata && typeof candidate.metadata === "object"
     ? JSON.stringify(Object.fromEntries(Object.entries(candidate.metadata as Record<string, unknown>).slice(0, 12).map(([key, value]) => [key.slice(0, 40), typeof value === "string" ? value.slice(0, 120) : value])))
     : null;

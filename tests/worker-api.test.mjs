@@ -47,12 +47,24 @@ test("round-trips normalized learner state in an anonymous session", async () =>
   const cookie = first.headers.get("set-cookie");
   assert.match(cookie ?? "", /anatomy_session=.*HttpOnly; SameSite=Lax; Secure/);
 
-  const state = { bookmarks: ["heart", "not-an-organ"], completedLessons: ["brain"], notes: { heart: "Follow the chambers" }, quizScores: { brain: 9 }, recentOrgans: ["heart"] };
+  const state = {
+    bookmarks: ["heart", "stomach", "skeleton", "not-an-organ"],
+    completedLessons: ["brain", "airway-diaphragm"],
+    notes: { heart: "Follow the chambers", thyroid: "Compare the two lobes" },
+    quizScores: { brain: 9, "female-reproductive": 2 },
+    recentOrgans: ["heart", "spinal-cord"],
+  };
   const saved = await worker.fetch(request("/api/state", { method: "PUT", headers: { "content-type": "application/json", cookie }, body: JSON.stringify(state) }), { DB }, ctx);
   assert.equal(saved.status, 200);
 
   const read = await worker.fetch(request("/api/state", { headers: { cookie } }), { DB }, ctx);
-  assert.deepEqual(await read.json(), { bookmarks: ["heart"], completedLessons: ["brain"], notes: { heart: "Follow the chambers" }, quizScores: { brain: 3 }, recentOrgans: ["heart"] });
+  assert.deepEqual(await read.json(), {
+    bookmarks: ["heart", "stomach", "skeleton"],
+    completedLessons: ["brain", "airway-diaphragm"],
+    notes: { heart: "Follow the chambers", thyroid: "Compare the two lobes" },
+    quizScores: { brain: 3, "female-reproductive": 2 },
+    recentOrgans: ["heart", "spinal-cord"],
+  });
 });
 
 test("accepts allowlisted analytics and rejects unsafe writes", async () => {
@@ -64,6 +76,11 @@ test("accepts allowlisted analytics and rejects unsafe writes", async () => {
   assert.equal(accepted.status, 202);
   await Promise.all(pending);
   assert.equal(DB.events.length, 1);
+
+  const expanded = await worker.fetch(request("/api/events", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ event: "lesson_completed", organId: "gallbladder" }) }), { DB }, ctx);
+  assert.equal(expanded.status, 202);
+  await Promise.all(pending);
+  assert.equal(DB.events.length, 2);
 
   const unknown = await worker.fetch(request("/api/events", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ event: "arbitrary" }) }), { DB }, ctx);
   assert.equal(unknown.status, 400);

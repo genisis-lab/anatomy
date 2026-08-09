@@ -1,13 +1,7 @@
-export type OrganId =
-  | "heart"
-  | "brain"
-  | "lungs"
-  | "liver"
-  | "kidneys"
-  | "eyeball"
-  | "intestine"
-  | "pancreas"
-  | "skin";
+import { expandedOrgans } from "./expanded-organs";
+import type { OrganId } from "./organ-ids";
+
+export type { OrganId } from "./organ-ids";
 
 export type Hotspot = {
   id: string;
@@ -45,7 +39,7 @@ export type Organ = {
   illustrated: boolean;
 };
 
-export const organs: Organ[] = [
+const coreOrgans: Organ[] = [
   {
     id: "heart",
     name: "Heart",
@@ -307,5 +301,7 @@ export const organs: Organ[] = [
     ],
   },
 ];
+
+export const organs: Organ[] = [...coreOrgans, ...expandedOrgans];
 
 export const organById = Object.fromEntries(organs.map((organ) => [organ.id, organ])) as Record<OrganId, Organ>;
