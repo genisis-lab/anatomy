@@ -48,16 +48,30 @@ test("persists anonymous learner state and bounded analytics in D1", async () =>
 });
 
 test("uses versioned models, modern Three timing, and durable cache policy", async () => {
-  const [data, viewer, worker, models] = await Promise.all([
+  const [data, idsSource, expanded, procedural, viewer, worker, models] = await Promise.all([
     read("app/lib/anatomy-data.ts"),
+    read("app/lib/organ-ids.ts"),
+    read("app/lib/expanded-organs.ts"),
+    read("app/lib/three/procedural-models.ts"),
     read("app/lib/three/viewer.ts"),
     read("worker/index.ts"),
     readdir(new URL("public/models/", root)),
   ]);
   assert.equal(models.length, 9);
   for (const model of models) assert.match(model, /^[a-z]+\.[a-f0-9]{8}\.glb$/);
+  const organIds = [...idsSource.matchAll(/^\s+"([a-z-]+)",$/gm)].map((match) => match[1]);
+  assert.equal(organIds.length, 21);
+  assert.equal(new Set(organIds).size, 21);
+  const expandedIds = [...expanded.matchAll(/^\s+id: "([a-z-]+)",$/gm)].map((match) => match[1]);
+  assert.equal(expandedIds.length, 12);
+  for (const id of expandedIds) {
+    assert.match(expanded, new RegExp(`model: "procedural:${id}"`));
+    assert.match(procedural, new RegExp(`(?:"${id}"|${id.replaceAll("-", "")})`));
+  }
   assert.doesNotMatch(data, /\/models\/[a-z]+\.glb/);
+  assert.match(data, /\.\.\.expandedOrgans/);
   assert.match(viewer, /new THREE\.Timer\(\)/);
   assert.doesNotMatch(viewer, /new THREE\.Clock\(\)/);
+  assert.match(worker, /new Set<string>\(ORGAN_IDS\)/);
   assert.match(worker, /max-age=31536000, immutable/);
 });

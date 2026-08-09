@@ -188,7 +188,8 @@ export function AnatomyApp() {
   const prefetchOrgan = (id: OrganId) => {
     if (id === organId || prefetched.current.has(id)) return;
     prefetched.current.add(id);
-    void fetch(organById[id].model, { priority: "low" } as RequestInit).catch(() => {});
+    const model = organById[id].model;
+    if (!model.startsWith("procedural:")) void fetch(model, { priority: "low" } as RequestInit).catch(() => {});
   };
 
   const openLearning = (type: LearningDialogType, id: OrganId = organId) => {

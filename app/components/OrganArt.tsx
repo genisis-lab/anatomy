@@ -1,5 +1,5 @@
-import type { CSSProperties } from "react";
 import type { Organ } from "../lib/anatomy-data";
+import { ProceduralOrganArt } from "./ProceduralOrganArt";
 
 export function OrganArt({
   organ,
@@ -13,12 +13,7 @@ export function OrganArt({
   size?: number;
 }) {
   if (!organ.illustrated) {
-    const labelling = alt ? { role: "img", "aria-label": alt } : { "aria-hidden": true };
-    return (
-      <span className="art-fallback" style={{ "--art-accent": organ.accent } as CSSProperties} {...labelling}>
-        {organ.icon}
-      </span>
-    );
+    return <ProceduralOrganArt organ={organ} asset={asset} alt={alt} />;
   }
   return (
     // These are pre-sized WebP specimen assets with art-directed variants;
