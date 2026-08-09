@@ -34,7 +34,7 @@ export class AnatomyViewer {
   private contactShadow!: THREE.Mesh;
 
   private frame = 0;
-  private clock = new THREE.Clock();
+  private timer = new THREE.Timer();
   private resizeObserver: ResizeObserver;
   private intersectionObserver: IntersectionObserver;
   private clipPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0);
@@ -70,6 +70,7 @@ export class AnatomyViewer {
   constructor(container: HTMLElement, callbacks: ViewerCallbacks) {
     this.container = container;
     this.callbacks = callbacks;
+    this.timer.connect(document);
 
     const lowPower = window.matchMedia("(max-width: 780px)").matches || (navigator.hardwareConcurrency ?? 8) < 6;
     // Fixed, decided once. A dynamic controller used to live here and it was a
@@ -378,11 +379,12 @@ export class AnatomyViewer {
 
   // ---------------------------------------------------------------- loop
 
-  private animate = () => {
+  private animate = (timestamp?: number) => {
     this.frame = requestAnimationFrame(this.animate);
     if (!this.isVisible || !this.isPageVisible) return;
 
-    const delta = Math.min(this.clock.getDelta(), 0.05);
+    this.timer.update(timestamp);
+    const delta = Math.min(this.timer.getDelta(), 0.05);
     const now = performance.now();
 
     this.applyAutoRotate(now);
@@ -419,7 +421,7 @@ export class AnatomyViewer {
   private onVisibilityChange = () => {
     this.isPageVisible = !document.hidden;
     if (this.isPageVisible) {
-      this.clock.start();
+      this.timer.reset();
       this.dirty = true;
     }
   };
@@ -496,6 +498,11 @@ export class AnatomyViewer {
 
   clearSelection() {
     this.select(null);
+  }
+
+  selectHotspot(id: string) {
+    if (!this.hotspots.list.some((item) => item.hotspot.id === id)) return;
+    this.select(id);
   }
 
   /** The callout is positioned imperatively so tracking a spinning model never
@@ -599,6 +606,7 @@ export class AnatomyViewer {
 
   dispose() {
     this.disposed = true;
+    this.timer.dispose();
     this.loadRequest += 1;
     cancelAnimationFrame(this.frame);
     gsap.killTweensOf(this.camera.position);
