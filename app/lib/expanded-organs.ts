@@ -29,7 +29,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Gastric mucosa and glands",
     comparison: "Stomach vs. intestine",
     conditions: ["Gastritis", "Peptic ulcer disease", "Gastroesophageal reflux", "Gastroparesis", "Gastric polyps", "Hiatal hernia", "Gastric cancer", "Pyloric stenosis"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "cardia", label: "Cardia", detail: "Receives food from the esophagus", position: [-0.65, 1.2, 0.55], color: "#6393d8" },
       { id: "fundus", label: "Fundus", detail: "Rounded upper reservoir", position: [0.45, 1.2, 0.65], color: "#d89bc4" },
@@ -58,7 +58,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Compact bone, spongy bone, and marrow",
     comparison: "Skeleton vs. muscles",
     conditions: ["Osteoporosis", "Fracture", "Osteoarthritis", "Scoliosis", "Osteomyelitis", "Rickets", "Paget disease of bone", "Osteosarcoma"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "skull", label: "Skull", detail: "Protects the brain and shapes the face", position: [0, 1.65, 0.55], color: "#c7ad86" },
       { id: "spine", label: "Vertebral Column", detail: "Supports the trunk and encloses the spinal cord", position: [0, 0.45, 0.55], color: "#6393d8" },
@@ -88,7 +88,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Skeletal muscle fibers and fascicles",
     comparison: "Muscles vs. skeleton",
     conditions: ["Muscle strain", "Tendinopathy", "Muscular dystrophy", "Myositis", "Rhabdomyolysis", "Myasthenia gravis", "Fibromyalgia", "Sarcopenia"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "deltoid", label: "Deltoid", detail: "Raises and stabilizes the arm", position: [0.85, 0.95, 0.65], color: "#ee7c6a" },
       { id: "pectoralis", label: "Pectoralis Major", detail: "Moves the arm across the chest", position: [0.4, 0.65, 0.8], color: "#f2a33b" },
@@ -118,7 +118,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Cochlear hair cells and vestibular epithelium",
     comparison: "Ear vs. eye",
     conditions: ["Otitis media", "Hearing loss", "Tinnitus", "Vertigo", "Ménière disease", "Otosclerosis", "Perforated eardrum", "Labyrinthitis"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "pinna", label: "Pinna", detail: "Funnels sound into the canal", position: [-1.15, 0.2, 0.65], color: "#ee7c6a" },
       { id: "eardrum", label: "Eardrum", detail: "Vibrates with incoming sound", position: [-0.25, 0.15, 0.75], color: "#f2a33b" },
@@ -148,7 +148,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Central gray matter and surrounding white matter",
     comparison: "Spinal cord vs. brain",
     conditions: ["Spinal cord injury", "Transverse myelitis", "Spinal stenosis", "Syringomyelia", "Multiple sclerosis", "Spina bifida", "Cord compression", "Amyotrophic lateral sclerosis"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "cervical", label: "Cervical Enlargement", detail: "Supplies the upper limbs", position: [0, 1.15, 0.65], color: "#ee7c6a" },
       { id: "thoracic", label: "Thoracic Cord", detail: "Connects with the trunk", position: [0, 0.35, 0.65], color: "#f2a33b" },
@@ -178,7 +178,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Transitional epithelium and detrusor muscle",
     comparison: "Bladder vs. kidneys",
     conditions: ["Urinary tract infection", "Overactive bladder", "Urinary retention", "Interstitial cystitis", "Bladder stones", "Urinary incontinence", "Neurogenic bladder", "Bladder cancer"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "ureters", label: "Ureters", detail: "Deliver urine from the kidneys", position: [0.7, 1.0, 0.55], color: "#6393d8" },
       { id: "detrusor", label: "Detrusor Muscle", detail: "Contracts to empty the bladder", position: [0.6, 0.05, 0.8], color: "#ee7c6a" },
@@ -207,7 +207,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Thyroid follicles and parafollicular cells",
     comparison: "Thyroid vs. pancreas",
     conditions: ["Hypothyroidism", "Hyperthyroidism", "Hashimoto thyroiditis", "Graves disease", "Thyroid nodules", "Goiter", "Thyroiditis", "Thyroid cancer"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "right-lobe", label: "Right Lobe", detail: "One half of the gland", position: [-0.75, 0.15, 0.75], color: "#ee7c6a" },
       { id: "left-lobe", label: "Left Lobe", detail: "Mirrors the opposite lobe", position: [0.75, 0.15, 0.75], color: "#f2a33b" },
@@ -236,7 +236,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Lymphoid follicles, red pulp, and white pulp",
     comparison: "Lymphatic network vs. bloodstream",
     conditions: ["Lymphadenopathy", "Lymphedema", "Splenomegaly", "Lymphoma", "Splenic rupture", "Tonsillitis", "Lymphangitis", "Immune deficiency"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "spleen", label: "Spleen", detail: "Filters blood and supports immune responses", position: [1.05, 0.65, 0.65], color: "#a85e70" },
       { id: "cervical", label: "Cervical Nodes", detail: "Drain the head and neck", position: [0, 1.45, 0.55], color: "#6393d8" },
@@ -266,7 +266,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Endometrium, myometrium, and ovarian follicles",
     comparison: "Uterus and ovaries vs. testes and prostate",
     conditions: ["Endometriosis", "Uterine fibroids", "Ovarian cysts", "Polycystic ovary syndrome", "Pelvic inflammatory disease", "Endometrial cancer", "Ovarian cancer", "Uterine prolapse"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "uterus", label: "Uterus", detail: "Supports implantation and pregnancy", position: [0, 0.1, 0.9], color: "#bf718b" },
       { id: "endometrium", label: "Endometrium", detail: "Inner lining that changes across the cycle", position: [0, 0.4, 1.0], color: "#ee7c6a" },
@@ -296,7 +296,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Seminiferous tubules and prostatic glands",
     comparison: "Testes and prostate vs. uterus and ovaries",
     conditions: ["Benign prostatic hyperplasia", "Prostatitis", "Prostate cancer", "Testicular torsion", "Testicular cancer", "Epididymitis", "Varicocele", "Male factor infertility"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "testes", label: "Testes", detail: "Produce sperm and testosterone", position: [-0.55, -1.05, 0.75], color: "#a97565" },
       { id: "epididymis", label: "Epididymis", detail: "Supports sperm maturation", position: [0.55, -0.85, 0.85], color: "#f2a33b" },
@@ -326,7 +326,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Folded columnar mucosa and smooth muscle",
     comparison: "Gallbladder vs. liver",
     conditions: ["Gallstones", "Cholecystitis", "Biliary colic", "Choledocholithiasis", "Cholangitis", "Gallbladder polyps", "Biliary dyskinesia", "Gallbladder cancer"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "fundus", label: "Fundus", detail: "Rounded distal end", position: [0, -0.85, 0.85], color: "#8d9e5d" },
       { id: "body", label: "Body", detail: "Main storage chamber", position: [0, 0.05, 0.9], color: "#ee7c6a" },
@@ -355,7 +355,7 @@ export const expandedOrgans: Organ[] = [
     tissue: "Ciliated airway epithelium, smooth muscle, and skeletal muscle",
     comparison: "Airway and diaphragm vs. lungs",
     conditions: ["Asthma", "Tracheal stenosis", "Gastroesophageal reflux", "Hiatal hernia", "Diaphragmatic paralysis", "Tracheitis", "Esophagitis", "Aspiration"],
-    illustrated: false,
+    illustrated: true,
     hotspots: [
       { id: "trachea", label: "Trachea", detail: "Cartilage-supported airway", position: [-0.35, 1.15, 0.75], color: "#6393d8" },
       { id: "esophagus", label: "Esophagus", detail: "Muscular food passage behind the airway", position: [0.4, 0.75, 0.55], color: "#d89bc4" },
@@ -365,4 +365,3 @@ export const expandedOrgans: Organ[] = [
     ],
   },
 ];
-
