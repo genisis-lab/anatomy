@@ -64,10 +64,16 @@ test("uses versioned models, modern Three timing, and durable cache policy", asy
   assert.equal(new Set(organIds).size, 21);
   const expandedIds = [...expanded.matchAll(/^\s+id: "([a-z-]+)",$/gm)].map((match) => match[1]);
   assert.equal(expandedIds.length, 12);
+  assert.equal([...expanded.matchAll(/^\s+illustrated: true,$/gm)].length, 12);
+  assert.doesNotMatch(expanded, /illustrated: false/);
   for (const id of expandedIds) {
     assert.match(expanded, new RegExp(`model: "procedural:${id}"`));
     assert.match(procedural, new RegExp(`(?:"${id}"|${id.replaceAll("-", "")})`));
+    const artwork = await readdir(new URL(`public/anatomy/${id}/`, root));
+    assert.deepEqual(artwork.sort(), ["compare.webp", "location.webp", "microscopic.webp", "organ.webp", "thumb.webp"]);
   }
+  assert.match(procedural, /new THREE\.MeshPhysicalMaterial/);
+  assert.match(procedural, /function organicize/);
   assert.doesNotMatch(data, /\/models\/[a-z]+\.glb/);
   assert.match(data, /\.\.\.expandedOrgans/);
   assert.match(viewer, /new THREE\.Timer\(\)/);
