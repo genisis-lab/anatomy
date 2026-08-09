@@ -46,4 +46,4 @@ Content is educational and is not medical advice. Reference links and the conten
 
 ## Deployment
 
-The Sites configuration is in `.openai/hosting.json`. A production build packages the Worker, static assets, metadata, and Drizzle migrations into `dist/`; publish through the existing Sites project so the D1 migration is applied with the deployment.
+The Sites configuration remains in `.openai/hosting.json`. `vite.config.ts` also generates a recoverable Cloudflare deployment configuration with the production D1 database, static assets, Images, and Worker observability when `npm run deploy` runs. Apply pending D1 migrations before a deployment that changes the schema.
