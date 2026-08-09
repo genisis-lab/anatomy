@@ -25,14 +25,18 @@ test("ships complete navigation and learning surfaces", async () => {
 });
 
 test("persists anonymous learner state and bounded analytics in D1", async () => {
-  const [hosting, worker, migration, schema, privacy] = await Promise.all([
+  const [hosting, vite, worker, migration, schema, privacy] = await Promise.all([
     read(".openai/hosting.json"),
+    read("vite.config.ts"),
     read("worker/index.ts"),
     read("drizzle/0000_anatomy_learning.sql"),
     read("db/schema.ts"),
     read("app/privacy/page.tsx"),
   ]);
   assert.equal(JSON.parse(hosting).d1, "DB");
+  assert.match(vite, /PRODUCTION_DATABASE_ID/);
+  assert.match(vite, /assets: \{ binding: "ASSETS", run_worker_first: true \}/);
+  assert.match(vite, /images: \{ binding: "IMAGES" \}/);
   assert.match(worker, /HttpOnly; SameSite=Lax/);
   assert.match(worker, /MAX_JSON_BYTES = 64 \* 1024/);
   assert.match(worker, /ctx\.waitUntil/);
