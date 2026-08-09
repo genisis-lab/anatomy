@@ -21,14 +21,19 @@ type Props = {
   onAutoRotate: (enabled: boolean) => void;
   compare: boolean;
   onCompare: () => void;
+  onHotspotSelect?: (hotspotId: string) => void;
+  onModelLoad?: (durationMs: number, failed: boolean) => void;
 };
 
-export function OrganViewer({ organ, autoRotate, onAutoRotate, compare, onCompare }: Props) {
+export function OrganViewer({ organ, autoRotate, onAutoRotate, compare, onCompare, onHotspotSelect, onModelLoad }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<AnatomyViewer | null>(null);
   const organRef = useRef(organ);
   const autoRotateRef = useRef(autoRotate);
-  const [selected, setSelected] = useState<Hotspot | null>(null);
+  const hotspotEventRef = useRef(onHotspotSelect);
+  const modelLoadEventRef = useRef(onModelLoad);
+  const [selection, setSelection] = useState<{ organId: Organ["id"]; hotspot: Hotspot } | null>(null);
+  const selected = selection?.organId === organ.id ? selection.hotspot : null;
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [slowLoad, setSlowLoad] = useState(false);
@@ -52,13 +57,32 @@ export function OrganViewer({ organ, autoRotate, onAutoRotate, compare, onCompar
   }, [autoRotate]);
 
   useEffect(() => {
+    hotspotEventRef.current = onHotspotSelect;
+    modelLoadEventRef.current = onModelLoad;
+  }, [onHotspotSelect, onModelLoad]);
+
+  const loadOrgan = (viewer: AnatomyViewer, nextOrgan: Organ) => {
+    const startedAt = performance.now();
+    return viewer.setOrgan(nextOrgan.model, nextOrgan.hotspots, nextOrgan.accent)
+      .then(() => modelLoadEventRef.current?.(Math.round(performance.now() - startedAt), false))
+      .catch(() => {
+        setLoading(false);
+        setProgress(0);
+        modelLoadEventRef.current?.(Math.round(performance.now() - startedAt), true);
+      });
+  };
+
+  useEffect(() => {
     let cancelled = false;
     let viewer: AnatomyViewer | null = null;
 
     void import("../lib/three/viewer").then(({ AnatomyViewer: Viewer }) => {
       if (cancelled || !mountRef.current) return;
       viewer = new Viewer(mountRef.current, {
-        onSelect: setSelected,
+        onSelect: (hotspot) => {
+          setSelection(hotspot ? { organId: organRef.current.id, hotspot } : null);
+          if (hotspot) hotspotEventRef.current?.(hotspot.id);
+        },
         onLoading: (isLoading, value) => {
           setLoading(isLoading);
           setProgress(value);
@@ -68,10 +92,7 @@ export function OrganViewer({ organ, autoRotate, onAutoRotate, compare, onCompar
       viewerRef.current = viewer;
       viewer.setAutoRotate(autoRotateRef.current);
       const current = organRef.current;
-      viewer.setOrgan(current.model, current.hotspots, current.accent).catch(() => {
-        setLoading(false);
-        setProgress(0);
-      });
+      void loadOrgan(viewer, current);
     });
 
     return () => {
@@ -82,10 +103,7 @@ export function OrganViewer({ organ, autoRotate, onAutoRotate, compare, onCompar
   }, []);
 
   useEffect(() => {
-    viewerRef.current?.setOrgan(organ.model, organ.hotspots, organ.accent).catch(() => {
-      setLoading(false);
-      setProgress(0);
-    });
+    if (viewerRef.current) void loadOrgan(viewerRef.current, organ);
   }, [organ]);
 
   useEffect(() => viewerRef.current?.setAutoRotate(autoRotate), [autoRotate]);
@@ -159,12 +177,21 @@ export function OrganViewer({ organ, autoRotate, onAutoRotate, compare, onCompar
         </div>
       )}
 
-      {/* Screen-reader equivalent of the dots, which live in the canvas. */}
-      <ul className="hotspot-index">
-        {organ.hotspots.map((hotspot) => (
-          <li key={hotspot.id}>{hotspot.label}: {hotspot.detail}</li>
-        ))}
-      </ul>
+      <div className="hotspot-controls" aria-label={`${organ.name} structures`}>
+        <span>Structures</span>
+        <div>
+          {organ.hotspots.map((hotspot) => (
+            <button
+              key={hotspot.id}
+              type="button"
+              aria-pressed={selected?.id === hotspot.id}
+              onClick={() => viewerRef.current?.selectHotspot(hotspot.id)}
+            >
+              <i style={{ background: hotspot.color }} />{hotspot.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {loading && slowLoad && (
         <div className="model-loader" role="status" aria-live="polite">
