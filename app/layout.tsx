@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "Anatomy Atelier — Learn anatomy like an artist",
   description:
-    "Explore medically detailed 3D organs — heart, brain, lungs, liver, kidneys, eye, intestine, pancreas, and skin — through an elegant, interactive anatomy atelier.",
+    "Explore 21 medically detailed 3D organs and body systems through an elegant, interactive anatomy atelier.",
   applicationName: "Anatomy Atelier",
   creator: "BuiltWAI",
   publisher: "BuiltWAI",
