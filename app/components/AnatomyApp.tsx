@@ -280,7 +280,6 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
   };
 
   const navItems: Array<[ViewId, typeof Compass]> = [
-    ["explore", Compass],
     ["systems", BrainCircuit],
     ["lessons", BookOpen],
     ["library", LibraryBig],
@@ -294,7 +293,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
         <header className="topbar">
           <button className="brand" type="button" onClick={() => selectOrgan("heart")} aria-label={t.brand.home}>
             <strong>Anatomy Atelier<sup>✦</sup></strong>
-            <em>{t.brand.tagline} · a BuiltWAI experience</em>
+            <em>{t.brand.tagline}.</em>
           </button>
           <nav className="main-nav" aria-label="Primary navigation">
             {navItems.map(([item, Icon]) => (
@@ -309,8 +308,20 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
             <input value={query} onFocus={() => changeView("library")} onChange={(event) => setQuery(event.target.value)} placeholder={t.search.placeholder} />
           </label>
           <LanguageSwitcher locale={locale} t={t} />
+          <button
+            type="button"
+            className={`header-explore ${view === "explore" ? "active" : ""}`}
+            aria-current={view === "explore" ? "page" : undefined}
+            aria-label={view === "explore" ? t.library.open : t.nav.explore}
+            onClick={() => {
+              if (view === "explore") setMobileLibrary(true);
+              else changeView("explore");
+            }}
+          >
+            <Compass size={17} aria-hidden />
+            <span>{t.nav.explore}</span>
+          </button>
           <button className="profile" aria-label={t.profile.open} onClick={() => setProfileOpen(true)}><span>MA</span><ChevronDown size={15} /></button>
-          <button className="mobile-library-trigger" onClick={() => view === "explore" ? setMobileLibrary(true) : changeView("library")} aria-label={t.library.open}><LibraryBig size={20} /></button>
         </header>
 
         {view === "explore" && (

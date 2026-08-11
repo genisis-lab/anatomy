@@ -5,6 +5,13 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
 
+async function readGlbJson(path) {
+  const buffer = await readFile(new URL(path, root));
+  assert.equal(buffer.toString("ascii", 0, 4), "glTF", `${path} should be a binary glTF`);
+  const jsonLength = buffer.readUInt32LE(12);
+  return JSON.parse(buffer.toString("utf8", 20, 20 + jsonLength).replace(/[\u0000 ]+$/, ""));
+}
+
 test("ships complete navigation and learning surfaces", async () => {
   const [app, views, dialog, css] = await Promise.all([
     read("app/components/AnatomyApp.tsx"),
@@ -19,7 +26,10 @@ test("ships complete navigation and learning surfaces", async () => {
   assert.match(dialog, /showModal\(\)/);
   assert.match(dialog, /quizQuestions/);
   assert.match(app, /prefers-reduced-motion/);
+  assert.match(app, /className=\{`header-explore/);
+  assert.doesNotMatch(app, /a BuiltWAI experience/);
   assert.match(css, /\.hotspot-controls/);
+  assert.match(css, /\.header-explore/);
   assert.match(css, /\.mobile-nav/);
   assert.match(css, /:focus-visible/);
 });
@@ -71,6 +81,17 @@ test("uses versioned models, modern Three timing, and durable cache policy", asy
     const modelMatch = expanded.match(new RegExp(`id: "${id}"[\\s\\S]*?model: "(/models/${id}\\.[a-f0-9]{8}\\.glb)"`));
     assert.ok(modelMatch, `${id} should use a versioned GLB model`);
     await access(new URL(`public${modelMatch[1]}`, root));
+    const glb = await readGlbJson(`public${modelMatch[1]}`);
+    const vertexCount = (glb.meshes ?? []).reduce(
+      (total, mesh) => total + mesh.primitives.reduce(
+        (meshTotal, primitive) => meshTotal + (glb.accessors[primitive.attributes.POSITION]?.count ?? 0),
+        0,
+      ),
+      0,
+    );
+    assert.ok(glb.meshes.length >= 10, `${id} should contain detailed, individually selectable anatomy`);
+    assert.ok(vertexCount >= 10_000, `${id} should retain a high-fidelity specimen mesh`);
+    assert.ok(glb.images.length >= 3, `${id} should embed color, normal, and roughness imagery`);
     assert.match(procedural, new RegExp(`(?:"${id}"|${id.replaceAll("-", "")})`));
     const artwork = await readdir(new URL(`public/anatomy/${id}/`, root));
     assert.deepEqual(artwork.sort(), ["compare.webp", "location.webp", "microscopic.webp", "organ.webp", "thumb.webp"]);
