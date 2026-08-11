@@ -72,7 +72,7 @@ export const expandedOrgans: Organ[] = [
     name: "Muscles",
     scientificName: "Musculi skeletales",
     system: "Muscular System",
-    model: "/models/muscles.608f28fd.glb",
+    model: "/models/muscles.343ebc0e.glb",
     icon: "∿",
     accent: "#b95f56",
     description: "Hundreds of skeletal muscles pull on tendons and bones to create movement, stabilize joints, maintain posture, and generate heat.",
