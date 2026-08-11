@@ -21,6 +21,7 @@ import {
   Share2,
   Sparkles,
   Stethoscope,
+  UserRound,
   X,
 } from "lucide-react";
 import { OrganViewer } from "./OrganViewer";
@@ -321,7 +322,9 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
             <Compass size={17} aria-hidden />
             <span>{t.nav.explore}</span>
           </button>
-          <button className="profile" aria-label={t.profile.open} onClick={() => setProfileOpen(true)}><span>MA</span><ChevronDown size={15} /></button>
+          <button className="profile" aria-label={t.profile.open} title={t.profile.open} onClick={() => setProfileOpen(true)}>
+            <UserRound size={18} aria-hidden />
+          </button>
         </header>
 
         {view === "explore" && (
