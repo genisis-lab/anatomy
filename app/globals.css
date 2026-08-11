@@ -120,6 +120,21 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
   background: transparent;
   cursor: pointer;
 }
+.profile {
+  width: 38px;
+  height: 38px;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(82,64,50,.5);
+  border-radius: 50%;
+  background: rgba(255,250,243,.72);
+  color: #6e5b52;
+  box-shadow: inset 0 0 0 3px #f7eee5;
+  transition: transform 700ms cubic-bezier(.32,.72,0,1), background 700ms cubic-bezier(.32,.72,0,1), color 700ms cubic-bezier(.32,.72,0,1);
+}
+.profile:hover { background: rgba(238,124,106,.14); color: #a8584d; }
+.profile:active { transform: scale(.98); }
+.profile:focus-visible { outline: 3px solid rgba(128,98,182,.35); outline-offset: 3px; }
 .header-explore {
   min-height: 38px;
   padding: 8px 12px;
@@ -132,18 +147,6 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
 }
 .header-explore:hover, .header-explore.active { background: rgba(238, 124, 106, .14); }
 .header-explore:active { transform: scale(.98); }
-.profile span {
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(82,64,50,.5);
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(140deg, #c46854, #efb59c);
-  color: white;
-  font: 600 11px var(--font-serif), serif;
-  box-shadow: inset 0 0 0 3px #f7eee5;
-}
 
 .workspace {
   max-width: 1720px;
@@ -880,6 +883,16 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .profile-dialog dl div { padding: 12px; border-radius: 12px; background: rgba(117,91,70,.06); }
 .profile-dialog dt { color: var(--muted); font-size: 12px; }
 .profile-dialog dd { margin: 4px 0 0; font: 500 24px var(--font-serif), serif; }
+
+@media (min-width: 761px) {
+  .profile-dialog {
+    position: fixed;
+    inset: 74px 20px auto auto;
+    max-height: calc(100dvh - 96px);
+    margin: 0;
+    overflow: auto;
+  }
+}
 
 .site-footer { max-width: 1440px; margin: 32px auto 0; padding: 24px 0 8px; display: grid; grid-template-columns: 1fr auto; gap: 16px 32px; border-top: 1px solid var(--line); }
 .site-footer > div strong, .site-footer > div span { display: block; }
