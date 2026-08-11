@@ -92,6 +92,8 @@ test("uses versioned models, modern Three timing, and durable cache policy", asy
     assert.ok(glb.meshes.length >= 10, `${id} should contain detailed, individually selectable anatomy`);
     assert.ok(vertexCount >= 10_000, `${id} should retain a high-fidelity specimen mesh`);
     assert.ok(glb.images.length >= 3, `${id} should embed color, normal, and roughness imagery`);
+    if (id === "skeleton") assert.ok(glb.meshes.length >= 80 && vertexCount >= 175_000, "skeleton should retain the full BodyParts3D bone set");
+    if (id === "muscles") assert.ok(glb.meshes.length >= 120 && vertexCount >= 250_000, "muscles should retain the registered scan-based full-body system");
     assert.match(procedural, new RegExp(`(?:"${id}"|${id.replaceAll("-", "")})`));
     const artwork = await readdir(new URL(`public/anatomy/${id}/`, root));
     assert.deepEqual(artwork.sort(), ["compare.webp", "location.webp", "microscopic.webp", "organ.webp", "thumb.webp"]);

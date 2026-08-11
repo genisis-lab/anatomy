@@ -230,10 +230,57 @@ const skeletonScans = [
 ];
 
 const muscleScans = [
-  [13336, "Right external oblique", true, 22000],
-  [13377, "Right rectus abdominis", false, 17000],
-  [13378, "Left rectus abdominis", false, 17000],
-  [22328, "Right gluteus maximus", true, 9000],
+  [13336, "Right external oblique", false, 5000],
+  [13337, "Left external oblique", false, 5000],
+  [13375, "Right pectoralis minor", false, 2400],
+  [13376, "Left pectoralis minor", false, 2400],
+  [13377, "Right rectus abdominis", false, 4500],
+  [13378, "Left rectus abdominis", false, 4500],
+  [13408, "Right sternocleidomastoid", false, 1800],
+  [13409, "Left sternocleidomastoid", false, 1800],
+  [33584, "Transverse right trapezius", false, 2400],
+  [33585, "Transverse left trapezius", false, 2400],
+  [33587, "Descending left trapezius", false, 2400],
+  [34680, "Clavicular right deltoid", false, 2200],
+  [34681, "Clavicular left deltoid", false, 2200],
+  [34682, "Acromial right deltoid", false, 2600],
+  [34683, "Acromial left deltoid", false, 2600],
+  [34684, "Spinal right deltoid", false, 2200],
+  [34685, "Spinal left deltoid", false, 2200],
+  [34690, "Clavicular right pectoralis major", false, 2800],
+  [34691, "Clavicular left pectoralis major", false, 2800],
+  [45874, "Abdominal right pectoralis major", false, 2400],
+  [45875, "Abdominal left pectoralis major", false, 2400],
+  [79979, "Sternocostal right pectoralis major", false, 4500],
+  [79980, "Sternocostal left pectoralis major", false, 4500],
+  [37684, "Short head of right biceps brachii", false, 2400],
+  [37685, "Short head of left biceps brachii", false, 2400],
+  [37686, "Long head of right biceps brachii", false, 2600],
+  [37687, "Long head of left biceps brachii", false, 2600],
+  [37695, "Medial head of right triceps brachii", false, 2000],
+  [37696, "Medial head of left triceps brachii", false, 2000],
+  [37697, "Lateral head of right triceps brachii", false, 2400],
+  [37698, "Lateral head of left triceps brachii", false, 2400],
+  [37699, "Long head of right triceps brachii", false, 2800],
+  [37700, "Long head of left triceps brachii", false, 2800],
+  [22328, "Right gluteus maximus", false, 4500],
+  [22329, "Left gluteus maximus", false, 4500],
+  [22330, "Right gluteus medius", false, 2400],
+  [22331, "Left gluteus medius", false, 2400],
+  [22354, "Right sartorius", false, 2400],
+  [22355, "Left sartorius", false, 2400],
+  [38928, "Right rectus femoris", false, 3600],
+  [38929, "Left rectus femoris", false, 3600],
+  [45888, "Long head of right biceps femoris", false, 3000],
+  [45891, "Short head of right biceps femoris", false, 2200],
+  [45892, "Short head of left biceps femoris", false, 2200],
+  [45958, "Medial head of left gastrocnemius", false, 2600],
+  [45960, "Lateral head of right gastrocnemius", false, 2600],
+  [45961, "Lateral head of left gastrocnemius", false, 2600],
+  [22544, "Right tibialis anterior", false, 2400],
+  [22545, "Left tibialis anterior", false, 2400],
+  [22558, "Right soleus", false, 2600],
+  [22559, "Left soleus", false, 2600],
 ];
 
 async function ensureRawScanSources() {
@@ -330,14 +377,15 @@ function replaceSkeletonWithScans(group) {
 }
 
 function enrichMusclesWithScans(group) {
-  const underlay = group.children.filter((child) => child instanceof THREE.Mesh);
-  underlay.forEach((mesh) => {
-    if (mesh.material instanceof THREE.MeshStandardMaterial) {
-      mesh.material.color.multiplyScalar(0.72);
-      mesh.material.roughness = 0.7;
-    }
-  });
-  group.add(bodyScanLayer(muscleScans, 0xb84f47, 16000));
+  // Replace the blocky authored mannequin with the same registered
+  // BodyParts3D coordinate set used by the skeleton. The bone layer provides
+  // a complete anatomical scaffold while 50+ individually named muscle scans
+  // form the visible superficial system and remain selectable mesh-by-mesh.
+  group.clear();
+  const scaffold = bodyScanLayer(skeletonScans, 0xd2bea0, 700);
+  scaffold.name = "BodyParts3D skeletal reference layer";
+  group.add(scaffold);
+  group.add(bodyScanLayer(muscleScans, 0xb84f47, 2600));
 }
 
 function removeAt(group, indexes) {
