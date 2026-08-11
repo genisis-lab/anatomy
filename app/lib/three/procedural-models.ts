@@ -196,6 +196,40 @@ function muscles() {
     nodule(group, [-0.16, 0.55 - row * 0.3, 0.48], [0.14,0.12,0.08], m.secondary, row + 10);
     nodule(group, [0.16, 0.55 - row * 0.3, 0.48], [0.14,0.12,0.08], m.secondary, row + 20);
   }
+  // Layer individually readable muscle bellies over the silhouette. These
+  // named bundles keep the figure anatomical when viewed close up instead of
+  // relying on a smooth mannequin-shaped shell.
+  nodule(group, [-0.27, 0.86, 0.43], [0.3, 0.25, 0.12], m.secondary, 41).name = "Left pectoralis major";
+  nodule(group, [0.27, 0.86, 0.43], [0.3, 0.25, 0.12], m.secondary, 42).name = "Right pectoralis major";
+  for (const side of [-1, 1]) {
+    const prefix = side < 0 ? "Left" : "Right";
+    const bundles = [
+      [[side * .58, .98, .28], [side * .76, .63, .31], [side * .86, .2, .29]],
+      [[side * .66, .9, .2], [side * .82, .5, .24], [side * .92, .08, .2]],
+      [[side * .88, .05, .22], [side * .98, -.28, .2], [side * 1.01, -.55, .16]],
+    ] as Array<Array<[number, number, number]>>;
+    bundles.forEach((points, index) => {
+      const mesh = tube(group, points, index === 2 ? .028 : .042, index === 1 ? m.secondary : m.primary);
+      mesh.name = `${prefix} ${index === 0 ? "biceps brachii" : index === 1 ? "triceps brachii" : "forearm flexors"}`;
+    });
+    for (let index = 0; index < 4; index += 1) {
+      const x = side * (.28 + index * .045);
+      const thigh = tube(group, [[x,-.72,.28],[x + side * .05,-1.18,.34],[x + side * .08,-1.55,.26]], .038, index % 2 ? m.primary : m.secondary);
+      thigh.name = `${prefix} quadriceps bundle ${index + 1}`;
+    }
+    for (let index = 0; index < 3; index += 1) {
+      const x = side * (.35 + index * .04);
+      const calf = tube(group, [[x,-1.64,.22],[x + side * .035,-1.9,.29],[x,-2.22,.18]], .034, index === 1 ? m.primary : m.secondary);
+      calf.name = `${prefix} calf bundle ${index + 1}`;
+    }
+    for (let rib = 0; rib < 4; rib += 1) {
+      const y = .62 - rib * .18;
+      const serratus = tube(group, [[side * .34,y,.42],[side * .52,y - .05,.36],[side * .62,y - .1,.25]], .022, m.secondary);
+      serratus.name = `${prefix} serratus anterior slip ${rib + 1}`;
+    }
+    const trapezius = tube(group, [[side * .1,1.36,.12],[side * .34,1.22,.2],[side * .62,1.06,.16]], .052, m.primary);
+    trapezius.name = `${prefix} trapezius`;
+  }
   return group;
 }
 

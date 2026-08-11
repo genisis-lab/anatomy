@@ -43,7 +43,7 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
 .topbar {
   height: 68px;
   display: grid;
-  grid-template-columns: minmax(300px, 1fr) auto minmax(260px, 1fr) auto;
+  grid-template-columns: minmax(300px, 1fr) auto minmax(220px, 280px) auto auto auto;
   align-items: center;
   gap: 22px;
   max-width: 1720px;
@@ -112,7 +112,7 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
 .search-box input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 12px; }
 .search-box input::placeholder { color: #a49b93; }
 
-.profile, .mobile-library-trigger {
+.profile, .header-explore {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -120,6 +120,18 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
   background: transparent;
   cursor: pointer;
 }
+.header-explore {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid rgba(215, 112, 91, .2);
+  border-radius: 999px;
+  background: rgba(238, 124, 106, .075);
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform 700ms cubic-bezier(.32,.72,0,1), background 700ms cubic-bezier(.32,.72,0,1);
+}
+.header-explore:hover, .header-explore.active { background: rgba(238, 124, 106, .14); }
+.header-explore:active { transform: scale(.98); }
 .profile span {
   width: 38px;
   height: 38px;
@@ -132,7 +144,6 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
   font: 600 11px var(--font-serif), serif;
   box-shadow: inset 0 0 0 3px #f7eee5;
 }
-.mobile-library-trigger { display: none; }
 
 .workspace {
   max-width: 1720px;
@@ -523,7 +534,7 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 
 @media (max-width: 1350px) {
   .app-shell { padding: 16px; }
-  .topbar { grid-template-columns: 1fr auto auto; gap: 12px; }
+  .topbar { grid-template-columns: 1fr auto auto auto auto; gap: 12px; }
   .brand em { display: none; }
   .search-box { display: none; }
   .workspace { grid-template-columns: 250px minmax(500px,1fr) 300px; height: min(700px, calc(100vh - 105px)); }
@@ -531,7 +542,7 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 }
 
 @media (max-width: 1040px) {
-  .topbar { grid-template-columns: 1fr auto auto; }
+  .topbar { grid-template-columns: 1fr auto auto auto auto; }
   .main-nav button span { display: none; }
   .main-nav button { padding: 10px; }
   .workspace { grid-template-columns: 210px minmax(450px,1fr); height: 690px; }
@@ -548,8 +559,9 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
   .topbar { height: 58px; grid-template-columns: 1fr auto auto; }
   .brand strong { font-size: 29px; }
   .main-nav { display: none; }
+  .language-switcher { display: none; }
   .profile span { width: 34px; height: 34px; }
-  .mobile-library-trigger { display: flex; }
+  .header-explore { min-height: 36px; padding: 7px 11px; }
   .workspace { display: block; margin-top: 8px; }
   .viewer-shell { height: 68vh; min-height: 520px; border-radius: 22px; }
   .organ-library {
