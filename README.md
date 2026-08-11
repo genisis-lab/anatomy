@@ -1,6 +1,6 @@
 # Anatomy Atelier
 
-An interactive, public anatomy learning experience for [BuiltWAI](https://builtwai.com). The site combines 21 medically detailed 3D specimens and system modules with guided lessons, quizzes, system browsing, comparisons, saved organs, private notes, and anonymous learning progress.
+An interactive, public anatomy learning experience for [BuiltWAI](https://builtwai.com). The site combines 21 medically detailed 3D specimens and system modules with resumable lessons, focused review, labelling quizzes, guided system pathways, synchronized 3D comparisons, structure-linked notes, and anonymous learning progress.
 
 Production: [anatomy.builtwai.com](https://anatomy.builtwai.com)
 
@@ -32,7 +32,8 @@ Useful commands:
 ## Product architecture
 
 - `app/components/AnatomyApp.tsx` coordinates navigation, deep links, search, learner state, and the 3D experience.
-- `app/components/ProductViews.tsx` contains Systems, Lessons, Library, Notes, Compare, Profile, and mobile navigation.
+- `app/components/ProductViews.tsx` contains Systems, Lessons, Library, structure-linked Notes, Profile, and mobile navigation.
+- `app/components/ComparisonExperience.tsx` provides the synchronized side-by-side 3D comparison workspace.
 - `app/components/LearningDialog.tsx` contains guided lessons, function sequences, system context, and scored quizzes.
 - `app/lib/anatomy-data.ts` and `app/lib/expanded-organs.ts` define the 21 specimens and their complete learning content.
 - `app/lib/three/` contains file-backed and procedural model loading, rendering, hotspots, and disposal.

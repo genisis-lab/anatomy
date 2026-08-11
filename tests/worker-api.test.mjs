@@ -51,7 +51,13 @@ test("round-trips normalized learner state in an anonymous session", async () =>
     bookmarks: ["heart", "stomach", "skeleton", "not-an-organ"],
     completedLessons: ["brain", "airway-diaphragm"],
     notes: { heart: "Follow the chambers", thyroid: "Compare the two lobes" },
+    structureNotes: { heart: { aorta: "Carries blood away", "bad key!": "drop" } },
+    structureBookmarks: { heart: ["aorta", "left-ventricle", "bad key!", "aorta"] },
     quizScores: { brain: 9, "female-reproductive": 2 },
+    quizAttempts: { heart: [{ mode: "labelling", score: 4, total: 6, completedAt: 1234 }] },
+    structureProgress: { heart: { aorta: { correct: 2, attempts: 3, lastReviewed: 1234 } } },
+    lessonProgress: { heart: 2, brain: 12 },
+    lastStudiedAt: { heart: 1234 },
     recentOrgans: ["heart", "spinal-cord"],
   };
   const saved = await worker.fetch(request("/api/state", { method: "PUT", headers: { "content-type": "application/json", cookie }, body: JSON.stringify(state) }), { DB }, ctx);
@@ -62,7 +68,13 @@ test("round-trips normalized learner state in an anonymous session", async () =>
     bookmarks: ["heart", "stomach", "skeleton"],
     completedLessons: ["brain", "airway-diaphragm"],
     notes: { heart: "Follow the chambers", thyroid: "Compare the two lobes" },
+    structureNotes: { heart: { aorta: "Carries blood away" } },
+    structureBookmarks: { heart: ["aorta", "left-ventricle"] },
     quizScores: { brain: 3, "female-reproductive": 2 },
+    quizAttempts: { heart: [{ mode: "labelling", score: 4, total: 6, completedAt: 1234 }] },
+    structureProgress: { heart: { aorta: { correct: 2, attempts: 3, lastReviewed: 1234 } } },
+    lessonProgress: { heart: 2, brain: 3 },
+    lastStudiedAt: { heart: 1234 },
     recentOrgans: ["heart", "spinal-cord"],
   });
 });

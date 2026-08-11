@@ -14,12 +14,14 @@ type Props = {
   organs: Organ[];
   onClose: () => void;
   onLessonComplete: () => void;
+  initialLessonStep?: number;
+  onLessonStep?: (step: number) => void;
   onQuizComplete: (score: number) => void;
 };
 
-export function LearningDialog({ type, organ, organs, onClose, onLessonComplete, onQuizComplete }: Props) {
+export function LearningDialog({ type, organ, organs, onClose, onLessonComplete, initialLessonStep = 0, onLessonStep, onQuizComplete }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [lessonStep, setLessonStep] = useState(0);
+  const [lessonStep, setLessonStep] = useState(initialLessonStep);
   const [lessonComplete, setLessonComplete] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -73,6 +75,12 @@ export function LearningDialog({ type, organ, organs, onClose, onLessonComplete,
     setQuizComplete(false);
   };
 
+  const moveLesson = (next: number) => {
+    const step = Math.max(0, Math.min(steps.length - 1, next));
+    setLessonStep(step);
+    onLessonStep?.(step);
+  };
+
   return (
     <dialog ref={dialogRef} className="learning-dialog" aria-labelledby="learning-dialog-title" onClose={onClose}>
       <section className={`learning-modal ${type === "system" ? "wide" : ""}`}>
@@ -96,11 +104,11 @@ export function LearningDialog({ type, organ, organs, onClose, onLessonComplete,
               </div>
             )}
             <div className="modal-actions">
-              <button className="secondary-action" onClick={() => setLessonStep((current) => Math.max(0, current - 1))} disabled={lessonStep === 0}>
+              <button className="secondary-action" onClick={() => moveLesson(lessonStep - 1)} disabled={lessonStep === 0}>
                 <ArrowLeft size={16} /> Back
               </button>
               {lessonStep < steps.length - 1 ? (
-                <button className="lesson-button" onClick={() => setLessonStep((current) => current + 1)}>Next step <ArrowRight size={16} /></button>
+                <button className="lesson-button" onClick={() => moveLesson(lessonStep + 1)}>Next step <ArrowRight size={16} /></button>
               ) : (
                 <button className="lesson-button" onClick={finishLesson}>Complete lesson <Check size={16} /></button>
               )}

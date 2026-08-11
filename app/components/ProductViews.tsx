@@ -9,16 +9,18 @@ import {
   Compass,
   LibraryBig,
   NotebookPen,
+  Route,
   Search,
+  Target,
   X,
 } from "lucide-react";
 import type { Organ, OrganId } from "../lib/anatomy-data";
-import type { LearnerState, ViewId } from "../lib/learning";
+import { buildReviewQueue, type LearnerState, type ReviewTarget, type ViewId } from "../lib/learning";
 import { OrganArt } from "./OrganArt";
 
 type SelectOrgan = (organId: OrganId) => void;
 
-export function SystemsView({ organs, onSelectOrgan }: { organs: Organ[]; onSelectOrgan: SelectOrgan }) {
+export function SystemsView({ organs, onSelectOrgan, onStartPathway }: { organs: Organ[]; onSelectOrgan: SelectOrgan; onStartPathway: (system: string) => void }) {
   const groups = useMemo(() => {
     const result = new Map<string, Organ[]>();
     organs.forEach((organ) => result.set(organ.system, [...(result.get(organ.system) ?? []), organ]));
@@ -44,6 +46,9 @@ export function SystemsView({ organs, onSelectOrgan }: { organs: Organ[]; onSele
                 </button>
               ))}
             </div>
+            <button className="system-pathway-button" onClick={() => onStartPathway(system)}>
+              <Route size={16} /> {items.length > 1 ? "Follow this system" : "Study in body context"}
+            </button>
           </article>
         ))}
       </div>
@@ -57,20 +62,54 @@ export function LessonsView({
   onSelectOrgan,
   onStartLesson,
   onStartQuiz,
+  onResumeLesson,
+  onReview,
 }: {
   organs: Organ[];
   learner: LearnerState;
   onSelectOrgan: SelectOrgan;
   onStartLesson: (organId: OrganId) => void;
   onStartQuiz: (organId: OrganId) => void;
+  onResumeLesson: (organId: OrganId, step: number) => void;
+  onReview: (target: ReviewTarget) => void;
 }) {
   const completed = learner.completedLessons.length;
+  const reviewQueue = buildReviewQueue(organs, learner);
+  const resumeOrgan = organs.find((organ) => typeof learner.lessonProgress[organ.id] === "number" && !learner.completedLessons.includes(organ.id));
+  const recentOrgan = organs.find((organ) => organ.id === learner.recentOrgans[0]);
   return (
     <section className="product-view lessons-view" aria-labelledby="lessons-title">
       <header className="view-heading">
         <div><span>Study path</span><h1 id="lessons-title">Learn one organ at a time</h1><p>Each guided lesson connects location, landmarks, function, and clinical context, then checks recall.</p></div>
         <div className="progress-summary"><strong>{completed}/{organs.length}</strong><span>lessons complete</span></div>
       </header>
+      {(resumeOrgan || reviewQueue.length > 0 || recentOrgan) && (
+        <section className="study-next" aria-label="Continue learning">
+          <div>
+            <span>Continue learning</span>
+            <h2>{resumeOrgan ? `Resume ${resumeOrgan.name}` : reviewQueue.length ? "Review what needs another look" : `Return to ${recentOrgan?.name}`}</h2>
+            <p>{resumeOrgan ? `Continue at step ${(learner.lessonProgress[resumeOrgan.id] ?? 0) + 1} of 4.` : reviewQueue.length ? `${reviewQueue.length} focused review ${reviewQueue.length === 1 ? "item is" : "items are"} ready.` : "Pick up from your most recent specimen."}</p>
+          </div>
+          <button onClick={() => resumeOrgan
+            ? onResumeLesson(resumeOrgan.id, learner.lessonProgress[resumeOrgan.id] ?? 0)
+            : reviewQueue[0]
+              ? onReview(reviewQueue[0])
+              : recentOrgan && onSelectOrgan(recentOrgan.id)}>
+            {resumeOrgan ? "Resume lesson" : reviewQueue.length ? "Start focused review" : "Open specimen"}<ArrowRight size={16} />
+          </button>
+        </section>
+      )}
+      {reviewQueue.length > 0 && (
+        <div className="review-queue" aria-label="Review queue">
+          {reviewQueue.map((target, index) => {
+            const item = organs.find((organ) => organ.id === target.organId)!;
+            const hotspot = item.hotspots.find((entry) => entry.id === target.hotspotId);
+            return <button key={`${target.organId}-${target.hotspotId ?? "quiz"}-${index}`} onClick={() => onReview(target)}>
+              <Target size={15} /><span><b>{item.name}</b><small>{hotspot ? hotspot.label : "Knowledge check"} · {Math.round(target.accuracy * 100)}%</small></span>
+            </button>;
+          })}
+        </div>
+      )}
       <div className="lesson-grid">
         {organs.map((organ, index) => {
           const isComplete = learner.completedLessons.includes(organ.id);
@@ -169,6 +208,10 @@ export function NotesView({
   onSelectOrgan,
   onNote,
   onNoteSaved,
+  selectedStructure,
+  onStructure,
+  onStructureNote,
+  onStructureBookmark,
 }: {
   organs: Organ[];
   organ: Organ;
@@ -177,8 +220,14 @@ export function NotesView({
   onSelectOrgan: SelectOrgan;
   onNote: (organId: OrganId, note: string) => void;
   onNoteSaved: (organId: OrganId) => void;
+  selectedStructure: string | null;
+  onStructure: (hotspotId: string | null) => void;
+  onStructureNote: (organId: OrganId, hotspotId: string, note: string) => void;
+  onStructureBookmark: (hotspotId: string) => void;
 }) {
   const note = learner.notes[organ.id] ?? "";
+  const structure = organ.hotspots.find((hotspot) => hotspot.id === selectedStructure) ?? null;
+  const structureNote = structure ? learner.structureNotes[organ.id]?.[structure.id] ?? "" : "";
   return (
     <section className="product-view notes-view" aria-labelledby="notes-title">
       <header className="view-heading">
@@ -195,48 +244,25 @@ export function NotesView({
         </aside>
         <article>
           <header><div><span>{organ.system}</span><h2>{organ.name} notes</h2></div><NotebookPen size={21} /></header>
-          <label htmlFor="organ-note">What do you want to remember?</label>
-          <textarea id="organ-note" value={note} onChange={(event) => onNote(organ.id, event.target.value)} onBlur={() => onNoteSaved(organ.id)} maxLength={10_000} placeholder={`Write a memory cue, question, or observation about the ${organ.name.toLowerCase()}…`} />
-          <footer><span>{note.length.toLocaleString()} / 10,000</span><small>Saved automatically</small></footer>
+          <div className="note-scope" role="tablist" aria-label="Note scope">
+            <button role="tab" aria-selected={!structure} className={!structure ? "active" : ""} onClick={() => onStructure(null)}>Whole organ</button>
+            {organ.hotspots.map((hotspot) => <button role="tab" aria-selected={structure?.id === hotspot.id} className={structure?.id === hotspot.id ? "active" : ""} key={hotspot.id} onClick={() => onStructure(hotspot.id)}>{hotspot.label}{learner.structureNotes[organ.id]?.[hotspot.id]?.trim() ? " ·" : ""}</button>)}
+          </div>
+          {structure ? (
+            <>
+              <div className="structure-note-context"><Target size={16} /><span><b>{structure.label}</b><small>{structure.detail}</small></span><button type="button" className={(learner.structureBookmarks[organ.id] ?? []).includes(structure.id) ? "saved" : ""} aria-pressed={(learner.structureBookmarks[organ.id] ?? []).includes(structure.id)} onClick={() => onStructureBookmark(structure.id)}><Bookmark size={14} fill={(learner.structureBookmarks[organ.id] ?? []).includes(structure.id) ? "currentColor" : "none"} />{(learner.structureBookmarks[organ.id] ?? []).includes(structure.id) ? "Saved" : "Save"}</button></div>
+              <label htmlFor="structure-note">Memory cue for this structure</label>
+              <textarea id="structure-note" className="structure-note-field" value={structureNote} onChange={(event) => onStructureNote(organ.id, structure.id, event.target.value)} onBlur={() => onNoteSaved(organ.id)} maxLength={320} placeholder={`Write a concise cue for ${structure.label.toLowerCase()}…`} />
+              <footer><span>{structureNote.length.toLocaleString()} / 320</span><small>Saved automatically</small></footer>
+            </>
+          ) : (
+            <>
+              <label htmlFor="organ-note">What do you want to remember?</label>
+              <textarea id="organ-note" value={note} onChange={(event) => onNote(organ.id, event.target.value)} onBlur={() => onNoteSaved(organ.id)} maxLength={10_000} placeholder={`Write a memory cue, question, or observation about the ${organ.name.toLowerCase()}…`} />
+              <footer><span>{note.length.toLocaleString()} / 10,000</span><small>Saved automatically</small></footer>
+            </>
+          )}
         </article>
-      </div>
-    </section>
-  );
-}
-
-export function ComparisonPanel({
-  organs,
-  left,
-  right,
-  onLeft,
-  onRight,
-  onClose,
-}: {
-  organs: Organ[];
-  left: Organ;
-  right: Organ;
-  onLeft: SelectOrgan;
-  onRight: SelectOrgan;
-  onClose: () => void;
-}) {
-  const rows = [
-    ["System", left.system, right.system],
-    ["Primary role", left.function, right.function],
-    ["Location", left.location, right.location],
-    ["Scale", left.size, right.size],
-    ["Blood supply", left.bloodSupply, right.bloodSupply],
-    ["Tissue focus", left.tissue, right.tissue],
-  ];
-  return (
-    <section className="comparison-panel" aria-label="Organ comparison">
-      <header><span>Compare specimens</span><button onClick={onClose} aria-label="Close comparison"><X size={18} /></button></header>
-      <div className="comparison-selectors">
-        <label><span>First organ</span><select value={left.id} onChange={(event) => onLeft(event.target.value as OrganId)}>{organs.map((organ) => <option key={organ.id} value={organ.id}>{organ.name}</option>)}</select></label>
-        <b>and</b>
-        <label><span>Second organ</span><select value={right.id} onChange={(event) => onRight(event.target.value as OrganId)}>{organs.filter((organ) => organ.id !== left.id).map((organ) => <option key={organ.id} value={organ.id}>{organ.name}</option>)}</select></label>
-      </div>
-      <div className="comparison-table">
-        {rows.map(([label, leftValue, rightValue]) => <div key={label}><strong>{label}</strong><span>{leftValue}</span><span>{rightValue}</span></div>)}
       </div>
     </section>
   );
@@ -254,8 +280,9 @@ export function ProfileDialog({ learner, organs, onClose }: { learner: LearnerSt
       <dl>
         <div><dt>Lessons complete</dt><dd>{learner.completedLessons.length}/{organs.length}</dd></div>
         <div><dt>Saved organs</dt><dd>{learner.bookmarks.length}</dd></div>
+        <div><dt>Saved structures</dt><dd>{Object.values(learner.structureBookmarks).reduce((total, items) => total + (items?.length ?? 0), 0)}</dd></div>
         <div><dt>Quiz accuracy</dt><dd>{bestAverage}%</dd></div>
-        <div><dt>Notes</dt><dd>{Object.values(learner.notes).filter((note) => note.trim()).length}</dd></div>
+        <div><dt>Notes</dt><dd>{Object.values(learner.notes).filter((note) => note.trim()).length + Object.values(learner.structureNotes).flatMap((notes) => Object.values(notes ?? {})).filter((note) => note.trim()).length}</dd></div>
       </dl>
       <button className="lesson-button" onClick={() => ref.current?.close()}>Continue studying <ArrowRight size={16} /></button>
     </dialog>

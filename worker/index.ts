@@ -116,11 +116,72 @@ function normalizedState(value: unknown) {
       if (ORGAN_ID_SET.has(organId) && typeof score === "number" && Number.isFinite(score)) quizScores[organId] = Math.max(0, Math.min(3, Math.round(score)));
     }
   }
+  const structureNotes: Record<string, Record<string, string>> = {};
+  if (data.structureNotes && typeof data.structureNotes === "object") {
+    for (const [organId, candidate] of Object.entries(data.structureNotes as Record<string, unknown>)) {
+      if (!ORGAN_ID_SET.has(organId) || !candidate || typeof candidate !== "object") continue;
+      structureNotes[organId] = Object.fromEntries(
+        Object.entries(candidate as Record<string, unknown>)
+          .filter(([id, note]) => /^[a-z0-9-]{1,60}$/i.test(id) && typeof note === "string")
+          .slice(0, 16)
+          .map(([id, note]) => [id, (note as string).slice(0, 320)]),
+      );
+    }
+  }
+  const structureProgress: Record<string, Record<string, { correct: number; attempts: number; lastReviewed: number }>> = {};
+  if (data.structureProgress && typeof data.structureProgress === "object") {
+    for (const [organId, candidate] of Object.entries(data.structureProgress as Record<string, unknown>)) {
+      if (!ORGAN_ID_SET.has(organId) || !candidate || typeof candidate !== "object") continue;
+      structureProgress[organId] = Object.fromEntries(
+        Object.entries(candidate as Record<string, unknown>)
+          .filter(([id, progress]) => /^[a-z0-9-]{1,60}$/i.test(id) && progress && typeof progress === "object")
+          .slice(0, 16)
+          .map(([id, progress]) => {
+            const entry = progress as Record<string, unknown>;
+            const attempts = Math.max(0, Math.min(999, Math.round(Number(entry.attempts) || 0)));
+            const correct = Math.max(0, Math.min(attempts, Math.round(Number(entry.correct) || 0)));
+            return [id, { correct, attempts, lastReviewed: Math.max(0, Number(entry.lastReviewed) || 0) }];
+          }),
+      );
+    }
+  }
+  const quizAttempts: Record<string, Array<{ mode: "knowledge" | "labelling"; score: number; total: number; completedAt: number }>> = {};
+  if (data.quizAttempts && typeof data.quizAttempts === "object") {
+    for (const [organId, candidate] of Object.entries(data.quizAttempts as Record<string, unknown>)) {
+      if (!ORGAN_ID_SET.has(organId) || !Array.isArray(candidate)) continue;
+      quizAttempts[organId] = candidate.slice(-12).flatMap((attempt) => {
+        if (!attempt || typeof attempt !== "object") return [];
+        const entry = attempt as Record<string, unknown>;
+        const mode = entry.mode === "labelling" ? "labelling" : "knowledge";
+        const total = Math.max(1, Math.min(20, Math.round(Number(entry.total) || 1)));
+        const score = Math.max(0, Math.min(total, Math.round(Number(entry.score) || 0)));
+        return [{ mode, score, total, completedAt: Math.max(0, Number(entry.completedAt) || 0) }];
+      });
+    }
+  }
+  const numberMap = (candidate: unknown, maximum: number) => candidate && typeof candidate === "object"
+    ? Object.fromEntries(Object.entries(candidate as Record<string, unknown>)
+      .filter(([organId, number]) => ORGAN_ID_SET.has(organId) && typeof number === "number" && Number.isFinite(number))
+      .map(([organId, number]) => [organId, Math.max(0, Math.min(maximum, Math.round(number as number)))]))
+    : {};
+  const structureBookmarks: Record<string, string[]> = {};
+  if (data.structureBookmarks && typeof data.structureBookmarks === "object") {
+    for (const [organId, candidate] of Object.entries(data.structureBookmarks as Record<string, unknown>)) {
+      if (!ORGAN_ID_SET.has(organId) || !Array.isArray(candidate)) continue;
+      structureBookmarks[organId] = [...new Set(candidate.filter((id): id is string => typeof id === "string" && /^[a-z0-9-]{1,60}$/i.test(id)))].slice(0, 16);
+    }
+  }
   return {
     bookmarks: organArray(data.bookmarks),
     completedLessons: organArray(data.completedLessons),
     notes,
+    structureNotes,
+    structureBookmarks,
     quizScores,
+    quizAttempts,
+    structureProgress,
+    lessonProgress: numberMap(data.lessonProgress, 3),
+    lastStudiedAt: numberMap(data.lastStudiedAt, Number.MAX_SAFE_INTEGER),
     recentOrgans: organArray(data.recentOrgans).slice(0, 6),
   };
 }
