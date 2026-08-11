@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
+  Bookmark,
   Box,
   CircleDashed,
   Layers3,
@@ -30,6 +31,11 @@ type Props = {
   onHotspotSelect?: (hotspotId: string) => void;
   onModelLoad?: (durationMs: number, failed: boolean) => void;
   onQuizComplete?: (score: number, total: number) => void;
+  onQuizAnswer?: (hotspotId: string, correct: boolean) => void;
+  selectedHotspotId?: string | null;
+  onHotspotNote?: (hotspotId: string) => void;
+  onHotspotBookmark?: (hotspotId: string) => void;
+  isHotspotSaved?: (hotspotId: string) => boolean;
 };
 
 /** Fisher–Yates. The quiz asks for every structure once, in a fresh order. */
@@ -49,7 +55,7 @@ type PickRef = { current: (hotspot: Hotspot) => void };
  * organ, so switching specimens restarts it without a resetting effect.
  */
 function LabelQuiz({
-  hotspots, t, pickRef, flash, screenY, onExit, onComplete,
+  hotspots, t, pickRef, flash, screenY, onExit, onComplete, onAnswer,
 }: {
   hotspots: Hotspot[];
   t: UiDictionary;
@@ -58,6 +64,7 @@ function LabelQuiz({
   screenY: (id: string) => number | null;
   onExit: () => void;
   onComplete: (score: number, total: number) => void;
+  onAnswer: (hotspotId: string, correct: boolean) => void;
 }) {
   const [seed, setSeed] = useState(0);
   const [step, setStep] = useState(0);
@@ -76,6 +83,7 @@ function LabelQuiz({
     pickRef.current = (hotspot) => {
       if (!target || answer) return;   // ignore extra clicks while feedback shows
       const correct = hotspot.id === target.id;
+      onAnswer(target.id, correct);
       const nextScore = score + (correct ? 1 : 0);
       flash(hotspot.id, correct);
       // A miss also marks where the answer actually was — otherwise the learner
@@ -168,7 +176,7 @@ function useAuthoringFlag() {
   );
 }
 
-export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCompare, quizActive, onQuizExit, onHotspotSelect, onModelLoad, onQuizComplete }: Props) {
+export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCompare, quizActive, onQuizExit, onHotspotSelect, onModelLoad, onQuizComplete, onQuizAnswer, selectedHotspotId, onHotspotNote, onHotspotBookmark, isHotspotSaved }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<AnatomyViewer | null>(null);
   const organRef = useRef(organ);
@@ -177,6 +185,7 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
   const hotspotEventRef = useRef(onHotspotSelect);
   const modelLoadEventRef = useRef(onModelLoad);
   const quizCompleteRef = useRef(onQuizComplete);
+  const quizAnswerRef = useRef(onQuizAnswer);
   const [selected, setSelected] = useState<Hotspot | null>(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -220,7 +229,13 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
     hotspotEventRef.current = onHotspotSelect;
     modelLoadEventRef.current = onModelLoad;
     quizCompleteRef.current = onQuizComplete;
-  }, [onHotspotSelect, onModelLoad, onQuizComplete]);
+    quizAnswerRef.current = onQuizAnswer;
+  }, [onHotspotSelect, onModelLoad, onQuizComplete, onQuizAnswer]);
+
+  useEffect(() => {
+    if (!viewerRef.current || !selectedHotspotId || quizActive) return;
+    viewerRef.current.selectHotspot(selectedHotspotId);
+  }, [loading, organ, quizActive, selectedHotspotId]);
 
   const loadOrgan = (viewer: AnatomyViewer, nextOrgan: Organ) => {
     const startedAt = performance.now();
@@ -353,6 +368,10 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
             </button>
             <b>{selected.label}</b>
             <small>{selected.detail}</small>
+            {(onHotspotNote || onHotspotBookmark) && <div className="callout-actions">
+              {onHotspotNote && <button className="callout-note" type="button" onClick={() => onHotspotNote(selected.id)}>Add note</button>}
+              {onHotspotBookmark && <button className="callout-note" type="button" aria-pressed={isHotspotSaved?.(selected.id) ?? false} onClick={() => onHotspotBookmark(selected.id)}><Bookmark size={12} fill={isHotspotSaved?.(selected.id) ? "currentColor" : "none"} /> {isHotspotSaved?.(selected.id) ? "Saved" : "Save"}</button>}
+            </div>}
           </div>
         </div>
       )}
@@ -392,6 +411,7 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
           screenY={(id) => viewerRef.current?.hotspotScreenY(id) ?? null}
           onExit={onQuizExit}
           onComplete={(score, total) => quizCompleteRef.current?.(score, total)}
+          onAnswer={(hotspotId, correct) => quizAnswerRef.current?.(hotspotId, correct)}
         />
       )}
 

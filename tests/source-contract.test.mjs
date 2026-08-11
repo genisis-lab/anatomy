@@ -13,20 +13,28 @@ async function readGlbJson(path) {
 }
 
 test("ships complete navigation and learning surfaces", async () => {
-  const [app, views, dialog, css] = await Promise.all([
+  const [app, views, dialog, comparison, learning, css] = await Promise.all([
     read("app/components/AnatomyApp.tsx"),
     read("app/components/ProductViews.tsx"),
     read("app/components/LearningDialog.tsx"),
+    read("app/components/ComparisonExperience.tsx"),
+    read("app/lib/learning.ts"),
     read("app/globals.css"),
   ]);
   for (const label of ["explore", "systems", "lessons", "library", "notes"]) assert.match(app, new RegExp(`\\[\"${label}\"`));
   assert.match(views, /export function MobileNav/);
-  assert.match(views, /export function ComparisonPanel/);
+  assert.match(comparison, /export function ComparisonExperience/);
+  assert.match(comparison, /onViewChange/);
+  assert.match(learning, /buildReviewQueue/);
+  assert.match(learning, /systemPathway/);
+  assert.match(views, /structure-note-field/);
+  assert.match(views, /Continue learning/);
   assert.match(views, /onNoteSaved/);
   assert.match(dialog, /showModal\(\)/);
   assert.match(dialog, /quizQuestions/);
   assert.match(app, /prefers-reduced-motion/);
   assert.match(app, /className=\{`header-explore/);
+  for (const parameter of ["hotspot", "compare", "learn", "step", "quiz", "pathway", "pathStep"]) assert.match(app, new RegExp(`"${parameter}"`));
   assert.doesNotMatch(app, /a BuiltWAI experience/);
   assert.match(css, /\.hotspot-controls/);
   assert.match(css, /\.header-explore/);

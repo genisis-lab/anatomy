@@ -16,11 +16,30 @@ export type QuizQuestion = {
   explanation: string;
 };
 
+export type QuizAttempt = {
+  mode: "knowledge" | "labelling";
+  score: number;
+  total: number;
+  completedAt: number;
+};
+
+export type StructureProgress = {
+  correct: number;
+  attempts: number;
+  lastReviewed: number;
+};
+
 export type LearnerState = {
   bookmarks: OrganId[];
   completedLessons: OrganId[];
   notes: Partial<Record<OrganId, string>>;
+  structureNotes: Partial<Record<OrganId, Record<string, string>>>;
+  structureBookmarks: Partial<Record<OrganId, string[]>>;
   quizScores: Partial<Record<OrganId, number>>;
+  quizAttempts: Partial<Record<OrganId, QuizAttempt[]>>;
+  structureProgress: Partial<Record<OrganId, Record<string, StructureProgress>>>;
+  lessonProgress: Partial<Record<OrganId, number>>;
+  lastStudiedAt: Partial<Record<OrganId, number>>;
   recentOrgans: OrganId[];
 };
 
@@ -28,7 +47,13 @@ export const emptyLearnerState: LearnerState = {
   bookmarks: [],
   completedLessons: [],
   notes: {},
+  structureNotes: {},
+  structureBookmarks: {},
   quizScores: {},
+  quizAttempts: {},
+  structureProgress: {},
+  lessonProgress: {},
+  lastStudiedAt: {},
   recentOrgans: [],
 };
 
@@ -111,7 +136,74 @@ export function mergeLearnerState(value: unknown): LearnerState {
     bookmarks: Array.isArray(candidate.bookmarks) ? candidate.bookmarks : [],
     completedLessons: Array.isArray(candidate.completedLessons) ? candidate.completedLessons : [],
     notes: candidate.notes && typeof candidate.notes === "object" ? candidate.notes : {},
+    structureNotes: candidate.structureNotes && typeof candidate.structureNotes === "object" ? candidate.structureNotes : {},
+    structureBookmarks: candidate.structureBookmarks && typeof candidate.structureBookmarks === "object" ? candidate.structureBookmarks : {},
     quizScores: candidate.quizScores && typeof candidate.quizScores === "object" ? candidate.quizScores : {},
+    quizAttempts: candidate.quizAttempts && typeof candidate.quizAttempts === "object" ? candidate.quizAttempts : {},
+    structureProgress: candidate.structureProgress && typeof candidate.structureProgress === "object" ? candidate.structureProgress : {},
+    lessonProgress: candidate.lessonProgress && typeof candidate.lessonProgress === "object" ? candidate.lessonProgress : {},
+    lastStudiedAt: candidate.lastStudiedAt && typeof candidate.lastStudiedAt === "object" ? candidate.lastStudiedAt : {},
     recentOrgans: Array.isArray(candidate.recentOrgans) ? candidate.recentOrgans : [],
   };
+}
+
+export type ReviewTarget = {
+  organId: OrganId;
+  hotspotId?: string;
+  accuracy: number;
+  lastReviewed: number;
+};
+
+export function buildReviewQueue(organs: Organ[], learner: LearnerState): ReviewTarget[] {
+  const targets: ReviewTarget[] = [];
+  organs.forEach((organ) => {
+    const structure = learner.structureProgress[organ.id] ?? {};
+    organ.hotspots.forEach((hotspot) => {
+      const progress = structure[hotspot.id];
+      if (!progress || progress.attempts === 0 || progress.correct === progress.attempts) return;
+      targets.push({
+        organId: organ.id,
+        hotspotId: hotspot.id,
+        accuracy: progress.correct / progress.attempts,
+        lastReviewed: progress.lastReviewed,
+      });
+    });
+    const attempts = learner.quizAttempts[organ.id] ?? [];
+    const latest = attempts.at(-1);
+    if (latest && latest.score < latest.total) {
+      targets.push({
+        organId: organ.id,
+        accuracy: latest.total ? latest.score / latest.total : 0,
+        lastReviewed: latest.completedAt,
+      });
+    }
+  });
+  return targets
+    .sort((a, b) => a.accuracy - b.accuracy || a.lastReviewed - b.lastReviewed)
+    .slice(0, 8);
+}
+
+const pathwaySequences: Partial<Record<OrganId, OrganId[]>> = {
+  heart: ["heart", "lungs", "brain", "kidneys"],
+  lungs: ["airway-diaphragm", "lungs", "heart"],
+  stomach: ["stomach", "intestine", "liver", "gallbladder", "pancreas"],
+  liver: ["stomach", "intestine", "liver", "gallbladder", "pancreas"],
+  kidneys: ["kidneys", "bladder"],
+  brain: ["brain", "spinal-cord", "muscles"],
+  pancreas: ["pancreas", "liver", "thyroid"],
+  skeleton: ["skeleton", "muscles", "spinal-cord"],
+  muscles: ["brain", "spinal-cord", "muscles", "skeleton"],
+  "female-reproductive": ["female-reproductive", "male-reproductive"],
+  "male-reproductive": ["male-reproductive", "female-reproductive"],
+  lymphatic: ["lymphatic", "skin", "intestine"],
+  eyeball: ["eyeball", "brain"],
+  ear: ["ear", "brain"],
+};
+
+export function systemPathway(system: string, organs: Organ[]): Organ[] {
+  const group = organs.filter((organ) => organ.system === system);
+  const sequence = pathwaySequences[group[0]?.id];
+  if (!sequence) return group;
+  const byId = new Map(organs.map((organ) => [organ.id, organ]));
+  return sequence.flatMap((id) => byId.get(id) ?? []);
 }

@@ -29,12 +29,12 @@ import type { OrganId } from "../lib/anatomy-data";
 import { locales, type LocaleConfig } from "../i18n/config";
 import { buildOrgans, indexOrgans } from "../i18n/merge";
 import { format, type Dictionary, type UiDictionary } from "../i18n/types";
-import { anatomySources, type ViewId } from "../lib/learning";
+import { anatomySources, systemPathway, type ReviewTarget, type ViewId } from "../lib/learning";
 import { trackLearningEvent, useLearnerState } from "../lib/use-learner-state";
 import { LearningDialog, type LearningDialogType } from "./LearningDialog";
 import { OrganArt } from "./OrganArt";
+import { ComparisonExperience } from "./ComparisonExperience";
 import {
-  ComparisonPanel,
   LessonsView,
   LibraryView,
   MobileNav,
@@ -86,6 +86,10 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
   const [savedOnly, setSavedOnly] = useState(false);
   const [mobileLibrary, setMobileLibrary] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
+  const [selectedHotspot, setSelectedHotspot] = useState<string | null>(null);
+  const [lessonStep, setLessonStep] = useState(0);
+  const [pathwaySystem, setPathwaySystem] = useState<string | null>(null);
+  const [pathwayStep, setPathwayStep] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const mobileLibraryRef = useRef<HTMLElement>(null);
@@ -94,6 +98,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
   const organ = organById[organId];
   const resolvedCompareId = compareId === organId ? (organs.find((item) => item.id !== organId)?.id ?? "heart") : compareId;
   const comparisonOrgan = organById[resolvedCompareId];
+  const pathwayOrgans = useMemo(() => pathwaySystem ? systemPathway(pathwaySystem, organs) : [], [organs, pathwaySystem]);
   const { state: learner, updateState, syncStatus } = useLearnerState();
   const filteredOrgans = useMemo(
     () => organs.filter((item) => `${item.name} ${item.system} ${item.function}`.toLocaleLowerCase(locale.code).includes(query.toLocaleLowerCase(locale.code))),
@@ -109,9 +114,23 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     const params = new URLSearchParams(window.location.search);
     const requestedOrgan = params.get("organ");
     const requestedView = params.get("view");
-    if (requestedOrgan && requestedOrgan in organById) setOrganId(requestedOrgan as OrganId);
-    if (requestedView && VIEW_IDS.has(requestedView as ViewId)) setView(requestedView as ViewId);
-  }, [organById]);
+    const nextOrgan = requestedOrgan && requestedOrgan in organById ? requestedOrgan as OrganId : "heart";
+    const nextView = requestedView && VIEW_IDS.has(requestedView as ViewId) ? requestedView as ViewId : "explore";
+    const hotspot = params.get("hotspot");
+    const comparison = params.get("compare");
+    const requestedModal = params.get("learn");
+    const pathway = params.get("pathway");
+    setOrganId(nextOrgan);
+    setView(nextView);
+    setSelectedHotspot(hotspot && organById[nextOrgan].hotspots.some((item) => item.id === hotspot) ? hotspot : null);
+    setCompare(Boolean(comparison && comparison in organById && comparison !== nextOrgan));
+    if (comparison && comparison in organById && comparison !== nextOrgan) setCompareId(comparison as OrganId);
+    setModal(requestedModal && ["lesson", "quiz", "animation", "system"].includes(requestedModal) ? requestedModal as LearningDialogType : null);
+    setLessonStep(Math.max(0, Math.min(3, Number(params.get("step")) || 0)));
+    setQuizActive(params.get("quiz") === "labels");
+    setPathwaySystem(pathway && organs.some((item) => item.system === pathway) ? pathway : null);
+    setPathwayStep(Math.max(0, Number(params.get("pathStep")) || 0));
+  }, [organById, organs]);
 
   useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -182,12 +201,22 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     );
   }, [organId, prefersReducedMotion]);
 
-  const writeUrl = (nextView: ViewId, nextOrgan: OrganId, replace = false) => {
+  const writeUrl = (nextView: ViewId, nextOrgan: OrganId, replace = false, extras: { hotspot?: string | null; compare?: OrganId | null; learn?: LearningDialogType | null; step?: number; quiz?: boolean; pathway?: string | null; pathStep?: number } = {}) => {
     const url = new URL(window.location.href);
     if (nextView === "explore") url.searchParams.delete("view");
     else url.searchParams.set("view", nextView);
     if (nextOrgan === "heart") url.searchParams.delete("organ");
     else url.searchParams.set("organ", nextOrgan);
+    ["hotspot", "compare", "learn", "step", "quiz", "pathway", "pathStep"].forEach((key) => url.searchParams.delete(key));
+    if (extras.hotspot) url.searchParams.set("hotspot", extras.hotspot);
+    if (extras.compare) url.searchParams.set("compare", extras.compare);
+    if (extras.learn) url.searchParams.set("learn", extras.learn);
+    if (extras.learn === "lesson" && typeof extras.step === "number") url.searchParams.set("step", String(extras.step));
+    if (extras.quiz) url.searchParams.set("quiz", "labels");
+    if (extras.pathway) {
+      url.searchParams.set("pathway", extras.pathway);
+      url.searchParams.set("pathStep", String(extras.pathStep ?? 0));
+    }
     window.history[replace ? "replaceState" : "pushState"]({}, "", `${url.pathname}${url.search}${url.hash}`);
   };
 
@@ -195,6 +224,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     updateState((current) => ({
       ...current,
       recentOrgans: [id, ...current.recentOrgans.filter((item) => item !== id)].slice(0, 6),
+      lastStudiedAt: { ...current.lastStudiedAt, [id]: Date.now() },
     }));
   };
 
@@ -210,6 +240,8 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     setMobileLibrary(false);
     setCompare(false);
     setQuizActive(false);
+    setSelectedHotspot(null);
+    setPathwaySystem(null);
     writeUrl(nextView, id);
     rememberOrgan(id);
     trackLearningEvent("organ_selected", id, { view: nextView });
@@ -220,6 +252,8 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     setView(nextView);
     setCompare(false);
     setQuizActive(false);
+    setSelectedHotspot(null);
+    setPathwaySystem(null);
     setMobileLibrary(false);
     writeUrl(nextView, organId);
     trackLearningEvent("view_changed", organId, { view: nextView });
@@ -233,12 +267,14 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     void fetch(model, { priority: "low" } as RequestInit).catch(() => {});
   };
 
-  const openLearning = (type: LearningDialogType, id: OrganId = organId) => {
+  const openLearning = (type: LearningDialogType, id: OrganId = organId, requestedStep?: number) => {
     if (id !== organId) {
       setOrganId(id);
-      writeUrl(view, id, true);
     }
+    const nextStep = type === "lesson" ? requestedStep ?? learner.lessonProgress[id] ?? 0 : 0;
+    setLessonStep(nextStep);
     setModal(type);
+    writeUrl(view, id, false, { learn: type, step: nextStep });
     trackLearningEvent(type === "quiz" ? "quiz_started" : type === "lesson" ? "lesson_started" : "view_changed", id, { surface: type });
   };
 
@@ -254,12 +290,19 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     updateState((current) => ({
       ...current,
       completedLessons: current.completedLessons.includes(organId) ? current.completedLessons : [...current.completedLessons, organId],
+      lessonProgress: { ...current.lessonProgress, [organId]: 3 },
+      lastStudiedAt: { ...current.lastStudiedAt, [organId]: Date.now() },
     }));
     trackLearningEvent("lesson_completed", organId);
   };
 
   const completeQuiz = (score: number) => {
-    updateState((current) => ({ ...current, quizScores: { ...current.quizScores, [organId]: Math.max(score, current.quizScores[organId] ?? 0) } }));
+    updateState((current) => ({
+      ...current,
+      quizScores: { ...current.quizScores, [organId]: Math.max(score, current.quizScores[organId] ?? 0) },
+      quizAttempts: { ...current.quizAttempts, [organId]: [...(current.quizAttempts[organId] ?? []), { mode: "knowledge", score, total: 3, completedAt: Date.now() }].slice(-12) },
+      lastStudiedAt: { ...current.lastStudiedAt, [organId]: Date.now() },
+    }));
     trackLearningEvent("quiz_completed", organId, { score, total: 3 });
   };
 
@@ -267,16 +310,106 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     updateState((current) => ({ ...current, notes: { ...current.notes, [id]: note } }));
   };
 
+  const saveStructureNote = (id: OrganId, hotspotId: string, note: string) => {
+    updateState((current) => ({
+      ...current,
+      structureNotes: { ...current.structureNotes, [id]: { ...(current.structureNotes[id] ?? {}), [hotspotId]: note } },
+      lastStudiedAt: { ...current.lastStudiedAt, [id]: Date.now() },
+    }));
+  };
+
+  const toggleStructureBookmark = (hotspotId: string) => {
+    updateState((current) => {
+      const saved = current.structureBookmarks[organId] ?? [];
+      return {
+        ...current,
+        structureBookmarks: {
+          ...current.structureBookmarks,
+          [organId]: saved.includes(hotspotId) ? saved.filter((id) => id !== hotspotId) : [...saved, hotspotId],
+        },
+        lastStudiedAt: { ...current.lastStudiedAt, [organId]: Date.now() },
+      };
+    });
+    trackLearningEvent("bookmark_toggled", organId, { hotspotId, saved: !(learner.structureBookmarks[organId] ?? []).includes(hotspotId) });
+  };
+
+  const recordLabellingAnswer = (hotspotId: string, correct: boolean) => {
+    updateState((current) => {
+      const previous = current.structureProgress[organId]?.[hotspotId] ?? { correct: 0, attempts: 0, lastReviewed: 0 };
+      return {
+        ...current,
+        structureProgress: { ...current.structureProgress, [organId]: { ...(current.structureProgress[organId] ?? {}), [hotspotId]: { correct: previous.correct + (correct ? 1 : 0), attempts: previous.attempts + 1, lastReviewed: Date.now() } } },
+        lastStudiedAt: { ...current.lastStudiedAt, [organId]: Date.now() },
+      };
+    });
+  };
+
+  const completeLabellingQuiz = (score: number, total: number) => {
+    updateState((current) => ({ ...current, quizAttempts: { ...current.quizAttempts, [organId]: [...(current.quizAttempts[organId] ?? []), { mode: "labelling", score, total, completedAt: Date.now() }].slice(-12) } }));
+    trackLearningEvent("quiz_completed", organId, { score, total, mode: "labelling" });
+  };
+
+  const updateLessonStep = (step: number) => {
+    setLessonStep(step);
+    updateState((current) => ({ ...current, lessonProgress: { ...current.lessonProgress, [organId]: step }, lastStudiedAt: { ...current.lastStudiedAt, [organId]: Date.now() } }));
+    writeUrl(view, organId, true, { learn: "lesson", step });
+  };
+
+  const openStructureNote = (hotspotId: string) => {
+    setSelectedHotspot(hotspotId);
+    setView("notes");
+    writeUrl("notes", organId, false, { hotspot: hotspotId });
+  };
+
+  const reviewTarget = (target: ReviewTarget) => {
+    selectOrgan(target.organId);
+    if (target.hotspotId) {
+      setSelectedHotspot(target.hotspotId);
+      writeUrl("explore", target.organId, true, { hotspot: target.hotspotId });
+    } else {
+      setQuizActive(true);
+      writeUrl("explore", target.organId, true, { quiz: true });
+    }
+  };
+
+  const startPathway = (system: string) => {
+    const items = systemPathway(system, organs);
+    if (!items.length) return;
+    setPathwaySystem(system);
+    setPathwayStep(0);
+    setView("explore");
+    setOrganId(items[0].id);
+    setCompare(false);
+    setQuizActive(false);
+    setSelectedHotspot(null);
+    rememberOrgan(items[0].id);
+    writeUrl("explore", items[0].id, false, { pathway: system, pathStep: 0 });
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+  };
+
+  const movePathway = (step: number) => {
+    const next = Math.max(0, Math.min(pathwayOrgans.length - 1, step));
+    const nextOrgan = pathwayOrgans[next];
+    if (!nextOrgan) return;
+    setPathwayStep(next);
+    setOrganId(nextOrgan.id);
+    setSelectedHotspot(null);
+    rememberOrgan(nextOrgan.id);
+    writeUrl("explore", nextOrgan.id, true, { pathway: pathwaySystem, pathStep: next });
+  };
+
   const selectComparisonOrgan = (id: OrganId) => {
-    if (id === compareId) setCompareId(organs.find((item) => item.id !== id)?.id ?? "heart");
+    const nextComparison = id === compareId ? (organs.find((item) => item.id !== id)?.id ?? "heart") : compareId;
+    if (id === compareId) setCompareId(nextComparison);
     setOrganId(id);
-    writeUrl(view, id, true);
+    writeUrl(view, id, true, { compare: nextComparison });
     rememberOrgan(id);
     trackLearningEvent("organ_selected", id, { view: "comparison" });
   };
 
   const toggleComparison = () => {
     setCompare((current) => !current);
+    writeUrl("explore", organId, false, { compare: compare ? null : resolvedCompareId });
     if (!compare) trackLearningEvent("comparison_opened", organId, { reference: resolvedCompareId });
   };
 
@@ -329,6 +462,17 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
 
         {view === "explore" && (
           <>
+            {compare ? (
+              <ComparisonExperience
+                organs={organs}
+                left={organ}
+                right={comparisonOrgan}
+                onLeft={selectComparisonOrgan}
+                onRight={(id) => { setCompareId(id); writeUrl("explore", organId, true, { compare: id }); }}
+                onClose={() => { setCompare(false); writeUrl("explore", organId, true); }}
+              />
+            ) : (
+            <>
             <div className="workspace">
               <aside
                 ref={mobileLibraryRef}
@@ -373,10 +517,15 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
                 compare={compare}
                 onCompare={toggleComparison}
                 quizActive={quizActive}
-                onQuizExit={() => setQuizActive(false)}
-                onHotspotSelect={(hotspotId) => trackLearningEvent("hotspot_selected", organId, { hotspotId })}
+                onQuizExit={() => { setQuizActive(false); writeUrl("explore", organId, true, { pathway: pathwaySystem, pathStep: pathwayStep }); }}
+                selectedHotspotId={selectedHotspot}
+                onHotspotNote={openStructureNote}
+                onHotspotBookmark={toggleStructureBookmark}
+                isHotspotSaved={(hotspotId) => (learner.structureBookmarks[organId] ?? []).includes(hotspotId)}
+                onHotspotSelect={(hotspotId) => { setSelectedHotspot(hotspotId); writeUrl("explore", organId, true, { hotspot: hotspotId, pathway: pathwaySystem, pathStep: pathwayStep }); trackLearningEvent("hotspot_selected", organId, { hotspotId }); }}
                 onModelLoad={(durationMs, failed) => trackLearningEvent(failed ? "model_load_failed" : "model_loaded", organId, { durationMs })}
-                onQuizComplete={(score, total) => trackLearningEvent("quiz_completed", organId, { score, total, mode: "labelling" })}
+                onQuizAnswer={recordLabellingAnswer}
+                onQuizComplete={completeLabellingQuiz}
               />
 
               <aside className="info-panel" ref={contentRef}>
@@ -401,7 +550,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
                 <button className="lesson-button" data-reveal onClick={() => openLearning("lesson")}>{t.info.viewLesson} <ArrowRight size={16} /></button>
                 <div className="action-grid" data-reveal>
                   <button onClick={() => openLearning("animation")}><Play size={15} /> {t.info.animate}</button>
-                  <button onClick={() => { setQuizActive(true); trackLearningEvent("quiz_started", organId, { mode: "labelling" }); }}><CircleHelp size={15} /> {t.info.quiz}</button>
+                  <button onClick={() => { setQuizActive(true); setSelectedHotspot(null); writeUrl("explore", organId, false, { quiz: true }); trackLearningEvent("quiz_started", organId, { mode: "labelling" }); }}><CircleHelp size={15} /> {t.info.quiz}</button>
                   <button onClick={toggleComparison} className={compare ? "active" : ""} aria-pressed={compare}><Share2 size={15} /> {t.info.compare}</button>
                 </div>
                 <button className={`save-organ ${learner.bookmarks.includes(organId) ? "saved" : ""}`} onClick={() => toggleBookmark(organId)} aria-pressed={learner.bookmarks.includes(organId)}>
@@ -409,6 +558,20 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
                 </button>
               </aside>
             </div>
+
+            {pathwaySystem && pathwayOrgans.length > 0 && (
+              <section className="pathway-guide" aria-label={`${pathwaySystem} guided pathway`}>
+                <div className="pathway-progress" aria-hidden><span style={{ width: `${((pathwayStep + 1) / pathwayOrgans.length) * 100}%` }} /></div>
+                <div><span>Guided system pathway · {pathwayStep + 1} of {pathwayOrgans.length}</span><h2>{pathwaySystem}</h2><p><b>{organ.name}</b> — {organ.function}. {organ.location}.</p></div>
+                <div className="pathway-actions">
+                  <button onClick={() => movePathway(pathwayStep - 1)} disabled={pathwayStep === 0}>Previous</button>
+                  {pathwayStep < pathwayOrgans.length - 1
+                    ? <button className="primary" onClick={() => movePathway(pathwayStep + 1)}>Next specimen <ArrowRight size={15} /></button>
+                    : <button className="primary" onClick={() => { setPathwaySystem(null); writeUrl("explore", organId, true); }}>Finish pathway</button>}
+                  <button className="pathway-close" onClick={() => { setPathwaySystem(null); writeUrl("explore", organId, true); }} aria-label="Close guided pathway"><X size={16} /></button>
+                </div>
+              </section>
+            )}
 
             <section className="learning-cards" aria-label={`${organ.name} learning resources`}>
               <article className="curiosity-card"><span>✿</span><p>Learning is<br />an act of curiosity.</p><em>Keep exploring</em></article>
@@ -420,7 +583,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
               <article>
                 <header><div><em>Compare organs</em><h3>{organ.comparison}</h3></div><Share2 size={17} /></header>
                 <div className="comparison-visual organ-card-image"><OrganArt organ={organ} asset="compare" alt={`${organ.comparison} anatomical comparison`} /></div>
-                <button onClick={() => setCompare(true)}>Choose two organs <ArrowRight size={14} /></button>
+                <button onClick={toggleComparison}>Choose two organs <ArrowRight size={14} /></button>
               </article>
               <article>
                 <header><div><em>Function sequence</em><h3>{organ.function}</h3></div><Play size={17} /></header>
@@ -437,18 +600,20 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
               <article className="system-card">
                 <header><div><em>Where it works</em><h3>{organ.system}</h3></div><BrainCircuit size={17} /></header>
                 <button type="button" className="system-visual organ-card-image" onClick={() => openLearning("system")} aria-label={`See where the ${organ.name.toLowerCase()} sits in the body`}><OrganArt organ={organ} asset="location" alt="" /></button>
-                <button onClick={() => openLearning("system")}>See the whole system <ArrowRight size={14} /></button>
+                <button onClick={() => startPathway(organ.system)}>Follow the whole system <ArrowRight size={14} /></button>
               </article>
             </section>
+            </>
+            )}
           </>
         )}
 
-        {view === "systems" && <SystemsView organs={organs} onSelectOrgan={selectOrgan} />}
-        {view === "lessons" && <LessonsView organs={organs} learner={learner} onSelectOrgan={selectOrgan} onStartLesson={(id) => openLearning("lesson", id)} onStartQuiz={(id) => openLearning("quiz", id)} />}
+        {view === "systems" && <SystemsView organs={organs} onSelectOrgan={selectOrgan} onStartPathway={startPathway} />}
+        {view === "lessons" && <LessonsView organs={organs} learner={learner} onSelectOrgan={selectOrgan} onStartLesson={(id) => openLearning("lesson", id)} onStartQuiz={(id) => openLearning("quiz", id)} onResumeLesson={(id, step) => openLearning("lesson", id, step)} onReview={reviewTarget} />}
         {view === "library" && (
           <LibraryView organs={organs} learner={learner} query={query} system={systemFilter} savedOnly={savedOnly} onQuery={setQuery} onSystem={setSystemFilter} onSavedOnly={setSavedOnly} onSelectOrgan={selectOrgan} onToggleBookmark={toggleBookmark} />
         )}
-        {view === "notes" && <NotesView organs={organs} organ={organ} learner={learner} syncStatus={syncStatus} onSelectOrgan={(id) => selectOrgan(id, "notes")} onNote={saveNote} onNoteSaved={(id) => trackLearningEvent("note_saved", id)} />}
+        {view === "notes" && <NotesView organs={organs} organ={organ} learner={learner} syncStatus={syncStatus} onSelectOrgan={(id) => selectOrgan(id, "notes")} onNote={saveNote} onNoteSaved={(id) => trackLearningEvent("note_saved", id)} selectedStructure={selectedHotspot} onStructure={(hotspotId) => { setSelectedHotspot(hotspotId); writeUrl("notes", organId, true, { hotspot: hotspotId }); }} onStructureNote={saveStructureNote} onStructureBookmark={toggleStructureBookmark} />}
 
         <footer className="site-footer">
           <div><strong>Anatomy Atelier</strong><span>Interactive education, not medical advice.</span></div>
@@ -460,8 +625,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
         </footer>
 
         <MobileNav active={view} onChange={changeView} />
-        {compare && <ComparisonPanel organs={organs} left={organ} right={comparisonOrgan} onLeft={selectComparisonOrgan} onRight={(id) => setCompareId(id)} onClose={() => setCompare(false)} />}
-        {modal && <LearningDialog type={modal} organ={organ} organs={organs} onClose={() => setModal(null)} onLessonComplete={completeLesson} onQuizComplete={completeQuiz} />}
+        {modal && <LearningDialog type={modal} organ={organ} organs={organs} initialLessonStep={lessonStep} onLessonStep={updateLessonStep} onClose={() => { setModal(null); writeUrl(view, organId, true); }} onLessonComplete={completeLesson} onQuizComplete={completeQuiz} />}
         {profileOpen && <ProfileDialog learner={learner} organs={organs} onClose={() => setProfileOpen(false)} />}
         {mobileLibrary && <button className="drawer-backdrop" aria-label="Close library" onClick={() => setMobileLibrary(false)} />}
       </main>

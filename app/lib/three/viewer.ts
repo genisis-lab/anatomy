@@ -5,11 +5,17 @@ import type { Hotspot } from "../anatomy-data";
 import { AnatomyAssetManager, type LoadedOrgan } from "./loaders";
 import { HotspotLayer } from "./hotspots";
 
+export type ViewerPose = {
+  position: [number, number, number];
+  target: [number, number, number];
+};
+
 type ViewerCallbacks = {
   onLoading: (loading: boolean, progress: number) => void;
   onSelect: (hotspot: Hotspot | null) => void;
   onPick?: (hotspot: Hotspot) => void;
   onAuthorPoint?: (point: { x: number; y: number; z: number }) => void;
+  onViewChange?: (pose: ViewerPose) => void;
 };
 
 const DOT_PIXELS = 34;
@@ -71,6 +77,7 @@ export class AnatomyViewer {
   private quizMode = false;
   private authoring = false;
   private authorRaycaster = new THREE.Raycaster();
+  private applyingPose = false;
 
   constructor(container: HTMLElement, callbacks: ViewerCallbacks) {
     this.container = container;
@@ -134,6 +141,7 @@ export class AnatomyViewer {
 
     document.addEventListener("visibilitychange", this.onVisibilityChange);
     this.controls.addEventListener("start", this.onControlStart);
+    this.controls.addEventListener("change", this.onControlChange);
     const canvas = this.renderer.domElement;
     canvas.addEventListener("pointerdown", this.onPointerDown);
     canvas.addEventListener("pointermove", this.onPointerMove);
@@ -448,6 +456,27 @@ export class AnatomyViewer {
     this.dirty = true;
   };
 
+  private onControlChange = () => {
+    if (!this.applyingPose) this.callbacks.onViewChange?.(this.getViewPose());
+    this.dirty = true;
+  };
+
+  getViewPose(): ViewerPose {
+    return {
+      position: this.camera.position.toArray() as [number, number, number],
+      target: this.controls.target.toArray() as [number, number, number],
+    };
+  }
+
+  setViewPose(pose: ViewerPose) {
+    this.applyingPose = true;
+    this.camera.position.fromArray(pose.position);
+    this.controls.target.fromArray(pose.target);
+    this.controls.update();
+    this.applyingPose = false;
+    this.dirty = true;
+  }
+
   private onPointerDown = (event: PointerEvent) => {
     this.pointerId = event.pointerId;
     this.pointerStart = { x: event.clientX, y: event.clientY };
@@ -661,6 +690,7 @@ export class AnatomyViewer {
     cancelAnimationFrame(this.frame);
     gsap.killTweensOf(this.camera.position);
     this.controls.removeEventListener("start", this.onControlStart);
+    this.controls.removeEventListener("change", this.onControlChange);
     this.controls.dispose();
     this.resizeObserver.disconnect();
     this.intersectionObserver.disconnect();
