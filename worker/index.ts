@@ -1,10 +1,12 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 import { ORGAN_IDS } from "../app/lib/organ-ids";
+import { applySecurityHeaders } from "../security-headers";
 
 type Env = {
   ASSETS: Fetcher;
   DB: D1Database;
+  EVENT_RATE_LIMITER: RateLimit;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -12,6 +14,7 @@ type Env = {
       };
     };
   };
+  STATE_WRITE_RATE_LIMITER: RateLimit;
 };
 
 const ORGAN_ID_SET = new Set<string>(ORGAN_IDS);
@@ -35,10 +38,7 @@ const SESSION_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}
 const MAX_JSON_BYTES = 64 * 1024;
 
 function securityHeaders(headers = new Headers()) {
-  headers.set("X-Content-Type-Options", "nosniff");
-  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-  return headers;
+  return applySecurityHeaders(headers);
 }
 
 function json(data: unknown, init: ResponseInit = {}) {
@@ -52,7 +52,13 @@ function cookieValue(request: Request, name: string) {
   const cookie = request.headers.get("Cookie") ?? "";
   for (const pair of cookie.split(";")) {
     const [key, ...value] = pair.trim().split("=");
-    if (key === name) return decodeURIComponent(value.join("="));
+    if (key === name) {
+      try {
+        return decodeURIComponent(value.join("="));
+      } catch {
+        return null;
+      }
+    }
   }
   return null;
 }
@@ -62,8 +68,7 @@ async function learnerSession(request: Request) {
   const id = current && SESSION_PATTERN.test(current) ? current : crypto.randomUUID();
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(id));
   const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
-  const secure = new URL(request.url).protocol === "https:" ? "; Secure" : "";
-  const setCookie = current ? null : `${SESSION_COOKIE}=${encodeURIComponent(id)}; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax${secure}`;
+  const setCookie = current ? null : `${SESSION_COOKIE}=${encodeURIComponent(id)}; Path=/; Max-Age=31536000; HttpOnly; SameSite=Lax; Secure`;
   return { hash, setCookie };
 }
 
@@ -96,7 +101,16 @@ async function readBoundedJson(request: Request): Promise<unknown> {
 
 function sameOriginWrite(request: Request) {
   const origin = request.headers.get("Origin");
-  return !origin || origin === new URL(request.url).origin;
+  return origin === new URL(request.url).origin;
+}
+
+function isJsonRequest(request: Request) {
+  return request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json") ?? false;
+}
+
+async function withinRateLimit(request: Request, limiter: RateLimit) {
+  const key = request.headers.get("CF-Connecting-IP") ?? "unknown";
+  return (await limiter.limit({ key })).success;
 }
 
 function normalizedState(value: unknown) {
@@ -189,6 +203,10 @@ function normalizedState(value: unknown) {
 async function handleState(request: Request, env: Env) {
   if (request.method !== "GET" && request.method !== "PUT") return json({ error: "Method not allowed" }, { status: 405, headers: { Allow: "GET, PUT" } });
   if (request.method === "PUT" && !sameOriginWrite(request)) return json({ error: "Cross-origin writes are not allowed" }, { status: 403 });
+  if (request.method === "PUT" && !isJsonRequest(request)) return json({ error: "Send a JSON request body" }, { status: 415 });
+  if (request.method === "PUT" && !(await withinRateLimit(request, env.STATE_WRITE_RATE_LIMITER))) {
+    return json({ error: "Too many state updates" }, { status: 429, headers: { "Retry-After": "60" } });
+  }
 
   const session = await learnerSession(request);
   if (request.method === "GET") {
@@ -214,6 +232,10 @@ async function handleState(request: Request, env: Env) {
 async function handleEvent(request: Request, env: Env, ctx: ExecutionContext) {
   if (request.method !== "POST") return json({ error: "Method not allowed" }, { status: 405, headers: { Allow: "POST" } });
   if (!sameOriginWrite(request)) return json({ error: "Cross-origin writes are not allowed" }, { status: 403 });
+  if (!isJsonRequest(request)) return json({ error: "Send a JSON request body" }, { status: 415 });
+  if (!(await withinRateLimit(request, env.EVENT_RATE_LIMITER))) {
+    return json({ error: "Too many analytics events" }, { status: 429, headers: { "Retry-After": "60" } });
+  }
   const payload = await readBoundedJson(request);
   if (!payload || typeof payload !== "object") return json({ error: "Invalid event" }, { status: 400 });
   const candidate = payload as Record<string, unknown>;

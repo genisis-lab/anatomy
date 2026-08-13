@@ -1,0 +1,240 @@
+diff --git a/node_modules/image-size/dist/index.cjs b/node_modules/image-size/dist/index.cjs
+index bde0210..50273da 100644
+--- a/node_modules/image-size/dist/index.cjs
++++ b/node_modules/image-size/dist/index.cjs
+@@ -163,6 +163,10 @@ var HEIF = {
+     while (currentOffset < ipcoBox.offset + ipcoBox.size) {
+       const ispeBox = findBox(input, "ispe", currentOffset);
+       if (!ispeBox) break;
++      const nextOffset = ispeBox.offset + ispeBox.size;
++      if (ispeBox.size < 20 || nextOffset <= currentOffset || nextOffset > ipcoBox.offset + ipcoBox.size) {
++        throw new TypeError("Invalid HEIF image property length");
++      }
+       const rawWidth = readUInt32BE(input, ispeBox.offset + 12);
+       const rawHeight = readUInt32BE(input, ispeBox.offset + 16);
+       const clapBox = findBox(input, "clap", currentOffset);
+@@ -173,7 +177,7 @@ var HEIF = {
+         width = rawWidth - cropRight;
+       }
+       images.push({ height, width });
+-      currentOffset = ispeBox.offset + ispeBox.size;
++      currentOffset = nextOffset;
+     }
+     if (images.length === 0) {
+       throw new TypeError("Invalid HEIF, no sizes found");
+@@ -253,9 +257,13 @@ var ICNS = {
+     const images = [];
+     while (imageOffset < fileLength && imageOffset < inputLength) {
+       const imageHeader = readImageHeader(input, imageOffset);
++      const entryLength = imageHeader[1];
++      if (entryLength < SIZE_HEADER2 || imageOffset + entryLength > inputLength || imageOffset + entryLength > fileLength) {
++        throw new TypeError("Invalid ICNS entry length");
++      }
+       const imageSize2 = getImageSize2(imageHeader[0]);
+       images.push(imageSize2);
+-      imageOffset += imageHeader[1];
++      imageOffset += entryLength;
+     }
+     if (images.length === 0) {
+       throw new TypeError("Invalid ICNS, no sizes found");
+@@ -487,10 +495,14 @@ function extractPartialStreams(input) {
+   while (offset < input.length) {
+     const jxlpBox = findBox(input, "jxlp", offset);
+     if (!jxlpBox) break;
++    const nextOffset = jxlpBox.offset + jxlpBox.size;
++    if (jxlpBox.size < 12 || nextOffset <= offset || nextOffset > input.length) {
++      throw new TypeError("Invalid JXL partial stream length");
++    }
+     partialStreams.push(
+-      input.slice(jxlpBox.offset + 12, jxlpBox.offset + jxlpBox.size)
++      input.slice(jxlpBox.offset + 12, nextOffset)
+     );
+-    offset = jxlpBox.offset + jxlpBox.size;
++    offset = nextOffset;
+   }
+   return partialStreams;
+ }
+diff --git a/node_modules/image-size/dist/index.mjs b/node_modules/image-size/dist/index.mjs
+index 22c17af..bfe0474 100644
+--- a/node_modules/image-size/dist/index.mjs
++++ b/node_modules/image-size/dist/index.mjs
+@@ -159,6 +159,10 @@ var HEIF = {
+     while (currentOffset < ipcoBox.offset + ipcoBox.size) {
+       const ispeBox = findBox(input, "ispe", currentOffset);
+       if (!ispeBox) break;
++      const nextOffset = ispeBox.offset + ispeBox.size;
++      if (ispeBox.size < 20 || nextOffset <= currentOffset || nextOffset > ipcoBox.offset + ipcoBox.size) {
++        throw new TypeError("Invalid HEIF image property length");
++      }
+       const rawWidth = readUInt32BE(input, ispeBox.offset + 12);
+       const rawHeight = readUInt32BE(input, ispeBox.offset + 16);
+       const clapBox = findBox(input, "clap", currentOffset);
+@@ -169,7 +173,7 @@ var HEIF = {
+         width = rawWidth - cropRight;
+       }
+       images.push({ height, width });
+-      currentOffset = ispeBox.offset + ispeBox.size;
++      currentOffset = nextOffset;
+     }
+     if (images.length === 0) {
+       throw new TypeError("Invalid HEIF, no sizes found");
+@@ -249,9 +253,13 @@ var ICNS = {
+     const images = [];
+     while (imageOffset < fileLength && imageOffset < inputLength) {
+       const imageHeader = readImageHeader(input, imageOffset);
++      const entryLength = imageHeader[1];
++      if (entryLength < SIZE_HEADER2 || imageOffset + entryLength > inputLength || imageOffset + entryLength > fileLength) {
++        throw new TypeError("Invalid ICNS entry length");
++      }
+       const imageSize2 = getImageSize2(imageHeader[0]);
+       images.push(imageSize2);
+-      imageOffset += imageHeader[1];
++      imageOffset += entryLength;
+     }
+     if (images.length === 0) {
+       throw new TypeError("Invalid ICNS, no sizes found");
+@@ -483,10 +491,14 @@ function extractPartialStreams(input) {
+   while (offset < input.length) {
+     const jxlpBox = findBox(input, "jxlp", offset);
+     if (!jxlpBox) break;
++    const nextOffset = jxlpBox.offset + jxlpBox.size;
++    if (jxlpBox.size < 12 || nextOffset <= offset || nextOffset > input.length) {
++      throw new TypeError("Invalid JXL partial stream length");
++    }
+     partialStreams.push(
+-      input.slice(jxlpBox.offset + 12, jxlpBox.offset + jxlpBox.size)
++      input.slice(jxlpBox.offset + 12, nextOffset)
+     );
+-    offset = jxlpBox.offset + jxlpBox.size;
++    offset = nextOffset;
+   }
+   return partialStreams;
+ }
+diff --git a/node_modules/image-size/dist/types/heif.cjs b/node_modules/image-size/dist/types/heif.cjs
+index 1f49078..bd7e5ff 100644
+--- a/node_modules/image-size/dist/types/heif.cjs
++++ b/node_modules/image-size/dist/types/heif.cjs
+@@ -59,6 +59,10 @@ var HEIF = {
+     while (currentOffset < ipcoBox.offset + ipcoBox.size) {
+       const ispeBox = findBox(input, "ispe", currentOffset);
+       if (!ispeBox) break;
++      const nextOffset = ispeBox.offset + ispeBox.size;
++      if (ispeBox.size < 20 || nextOffset <= currentOffset || nextOffset > ipcoBox.offset + ipcoBox.size) {
++        throw new TypeError("Invalid HEIF image property length");
++      }
+       const rawWidth = readUInt32BE(input, ispeBox.offset + 12);
+       const rawHeight = readUInt32BE(input, ispeBox.offset + 16);
+       const clapBox = findBox(input, "clap", currentOffset);
+@@ -69,7 +73,7 @@ var HEIF = {
+         width = rawWidth - cropRight;
+       }
+       images.push({ height, width });
+-      currentOffset = ispeBox.offset + ispeBox.size;
++      currentOffset = nextOffset;
+     }
+     if (images.length === 0) {
+       throw new TypeError("Invalid HEIF, no sizes found");
+diff --git a/node_modules/image-size/dist/types/heif.mjs b/node_modules/image-size/dist/types/heif.mjs
+index 0133091..c3b2db8 100644
+--- a/node_modules/image-size/dist/types/heif.mjs
++++ b/node_modules/image-size/dist/types/heif.mjs
+@@ -57,6 +57,10 @@ var HEIF = {
+     while (currentOffset < ipcoBox.offset + ipcoBox.size) {
+       const ispeBox = findBox(input, "ispe", currentOffset);
+       if (!ispeBox) break;
++      const nextOffset = ispeBox.offset + ispeBox.size;
++      if (ispeBox.size < 20 || nextOffset <= currentOffset || nextOffset > ipcoBox.offset + ipcoBox.size) {
++        throw new TypeError("Invalid HEIF image property length");
++      }
+       const rawWidth = readUInt32BE(input, ispeBox.offset + 12);
+       const rawHeight = readUInt32BE(input, ispeBox.offset + 16);
+       const clapBox = findBox(input, "clap", currentOffset);
+@@ -67,7 +71,7 @@ var HEIF = {
+         width = rawWidth - cropRight;
+       }
+       images.push({ height, width });
+-      currentOffset = ispeBox.offset + ispeBox.size;
++      currentOffset = nextOffset;
+     }
+     if (images.length === 0) {
+       throw new TypeError("Invalid HEIF, no sizes found");
+diff --git a/node_modules/image-size/dist/types/icns.cjs b/node_modules/image-size/dist/types/icns.cjs
+index 32c8d37..bff33a5 100644
+--- a/node_modules/image-size/dist/types/icns.cjs
++++ b/node_modules/image-size/dist/types/icns.cjs
+@@ -72,9 +72,13 @@ var ICNS = {
+     const images = [];
+     while (imageOffset < fileLength && imageOffset < inputLength) {
+       const imageHeader = readImageHeader(input, imageOffset);
++      const entryLength = imageHeader[1];
++      if (entryLength < SIZE_HEADER || imageOffset + entryLength > inputLength || imageOffset + entryLength > fileLength) {
++        throw new TypeError("Invalid ICNS entry length");
++      }
+       const imageSize = getImageSize(imageHeader[0]);
+       images.push(imageSize);
+-      imageOffset += imageHeader[1];
++      imageOffset += entryLength;
+     }
+     if (images.length === 0) {
+       throw new TypeError("Invalid ICNS, no sizes found");
+diff --git a/node_modules/image-size/dist/types/icns.mjs b/node_modules/image-size/dist/types/icns.mjs
+index 8710027..46e7da1 100644
+--- a/node_modules/image-size/dist/types/icns.mjs
++++ b/node_modules/image-size/dist/types/icns.mjs
+@@ -70,9 +70,13 @@ var ICNS = {
+     const images = [];
+     while (imageOffset < fileLength && imageOffset < inputLength) {
+       const imageHeader = readImageHeader(input, imageOffset);
++      const entryLength = imageHeader[1];
++      if (entryLength < SIZE_HEADER || imageOffset + entryLength > inputLength || imageOffset + entryLength > fileLength) {
++        throw new TypeError("Invalid ICNS entry length");
++      }
+       const imageSize = getImageSize(imageHeader[0]);
+       images.push(imageSize);
+-      imageOffset += imageHeader[1];
++      imageOffset += entryLength;
+     }
+     if (images.length === 0) {
+       throw new TypeError("Invalid ICNS, no sizes found");
+diff --git a/node_modules/image-size/dist/types/jxl.cjs b/node_modules/image-size/dist/types/jxl.cjs
+index a12095b..cfe7e27 100644
+--- a/node_modules/image-size/dist/types/jxl.cjs
++++ b/node_modules/image-size/dist/types/jxl.cjs
+@@ -116,10 +116,14 @@ function extractPartialStreams(input) {
+   while (offset < input.length) {
+     const jxlpBox = findBox(input, "jxlp", offset);
+     if (!jxlpBox) break;
++    const nextOffset = jxlpBox.offset + jxlpBox.size;
++    if (jxlpBox.size < 12 || nextOffset <= offset || nextOffset > input.length) {
++      throw new TypeError("Invalid JXL partial stream length");
++    }
+     partialStreams.push(
+-      input.slice(jxlpBox.offset + 12, jxlpBox.offset + jxlpBox.size)
++      input.slice(jxlpBox.offset + 12, nextOffset)
+     );
+-    offset = jxlpBox.offset + jxlpBox.size;
++    offset = nextOffset;
+   }
+   return partialStreams;
+ }
+diff --git a/node_modules/image-size/dist/types/jxl.mjs b/node_modules/image-size/dist/types/jxl.mjs
+index 49b0c4c..699ecbf 100644
+--- a/node_modules/image-size/dist/types/jxl.mjs
++++ b/node_modules/image-size/dist/types/jxl.mjs
+@@ -114,10 +114,14 @@ function extractPartialStreams(input) {
+   while (offset < input.length) {
+     const jxlpBox = findBox(input, "jxlp", offset);
+     if (!jxlpBox) break;
++    const nextOffset = jxlpBox.offset + jxlpBox.size;
++    if (jxlpBox.size < 12 || nextOffset <= offset || nextOffset > input.length) {
++      throw new TypeError("Invalid JXL partial stream length");
++    }
+     partialStreams.push(
+-      input.slice(jxlpBox.offset + 12, jxlpBox.offset + jxlpBox.size)
++      input.slice(jxlpBox.offset + 12, nextOffset)
+     );
+-    offset = jxlpBox.offset + jxlpBox.size;
++    offset = nextOffset;
+   }
+   return partialStreams;
+ }
