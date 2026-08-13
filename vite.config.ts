@@ -36,6 +36,18 @@ const localBindingConfig = {
         },
       ]
     : [],
+  ratelimits: [
+    {
+      name: "STATE_WRITE_RATE_LIMITER",
+      namespace_id: "2111",
+      simple: { limit: 60, period: 60 as const },
+    },
+    {
+      name: "EVENT_RATE_LIMITER",
+      namespace_id: "2112",
+      simple: { limit: 120, period: 60 as const },
+    },
+  ],
   ...(isCloudflareDeploy
     ? {
         assets: { binding: "ASSETS", run_worker_first: true },
