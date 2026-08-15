@@ -66,7 +66,7 @@ test("persists anonymous learner state and bounded analytics in D1", async () =>
 });
 
 test("uses versioned models, modern Three timing, and durable cache policy", async () => {
-  const [data, idsSource, expanded, procedural, loader, viewer, worker, models] = await Promise.all([
+  const [data, idsSource, expanded, procedural, loader, viewer, worker, securityHeaders, models] = await Promise.all([
     read("app/lib/anatomy-data.ts"),
     read("app/lib/organ-ids.ts"),
     read("app/lib/expanded-organs.ts"),
@@ -74,6 +74,7 @@ test("uses versioned models, modern Three timing, and durable cache policy", asy
     read("app/lib/three/loaders.ts"),
     read("app/lib/three/viewer.ts"),
     read("worker/index.ts"),
+    read("security-headers.ts"),
     readdir(new URL("public/models/", root)),
   ]);
   assert.equal(models.length, 21);
@@ -116,6 +117,7 @@ test("uses versioned models, modern Three timing, and durable cache policy", asy
   assert.doesNotMatch(viewer, /new THREE\.Clock\(\)/);
   assert.match(worker, /new Set<string>\(ORGAN_IDS\)/);
   assert.match(worker, /max-age=31536000, immutable/);
+  assert.match(securityHeaders, /connect-src 'self' blob:/, "embedded GLB textures require blob fetches");
 });
 
 test("ports upstream multilingual routing and labelling quiz across the expanded atlas", async () => {
