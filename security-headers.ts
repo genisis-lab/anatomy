@@ -1,7 +1,8 @@
 export const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   "base-uri 'self'",
-  "connect-src 'self'",
+  // GLTFLoader decodes embedded model textures by fetching generated blob URLs.
+  "connect-src 'self' blob:",
   "font-src 'self' data:",
   "form-action 'self'",
   "frame-ancestors 'none'",
