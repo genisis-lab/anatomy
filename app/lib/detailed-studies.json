@@ -1,0 +1,716 @@
+{
+  "ear": {
+    "model": "/models/ear.eb7050f0.glb",
+    "note": "Reference-guided schematic ear: outer ear, auditory canal, separate ossicles, cochlea, semicircular canals, auditory tube, and nerve. Structures are separated and enlarged for visibility; this is not a temporal-bone scan.",
+    "hotspots": [
+      {
+        "id": "auricle",
+        "label": "Auricle",
+        "meshName": "Auricle",
+        "detail": "Auricle in this educational study",
+        "position": [
+          -1.2307515144348145,
+          0.039519429206848145,
+          -0.1075541228055954
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "ear-canal",
+        "label": "External auditory canal",
+        "meshName": "Ear canal",
+        "detail": "External auditory canal in this educational study",
+        "position": [
+          -0.3992432951927185,
+          -0.12928976118564606,
+          0.022169718518853188
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "tympanic-membrane",
+        "label": "Tympanic membrane",
+        "meshName": "Tympanic membrane",
+        "detail": "Tympanic membrane in this educational study",
+        "position": [
+          0.05667265132069588,
+          -0.05118545517325401,
+          0.022169766947627068
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "malleus",
+        "label": "Malleus",
+        "meshName": "Malleus",
+        "detail": "Malleus in this educational study",
+        "position": [
+          0.18519875407218933,
+          0.017813801765441895,
+          0.0686265230178833
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "incus",
+        "label": "Incus",
+        "meshName": "Incus",
+        "detail": "Incus in this educational study",
+        "position": [
+          0.42777538299560547,
+          0.14430205523967743,
+          0.057281285524368286
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "stapes",
+        "label": "Stapes",
+        "meshName": "Stapes",
+        "detail": "Stapes in this educational study",
+        "position": [
+          0.6417470574378967,
+          -0.016073886305093765,
+          0.057281285524368286
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "cochlea",
+        "label": "Cochlea",
+        "meshName": "Cochlea",
+        "detail": "Cochlea in this educational study",
+        "position": [
+          1.2103033065795898,
+          -0.3008282482624054,
+          0.13799618184566498
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "semicircular-canal-0",
+        "label": "Semicircular canals",
+        "meshName": "Semicircular canal 0",
+        "detail": "Semicircular canals in this educational study",
+        "position": [
+          0.9577873945236206,
+          0.4988957643508911,
+          -0.09486883878707886
+        ],
+        "color": "#c78176"
+      }
+    ]
+  },
+  "spinal-cord": {
+    "model": "/models/spinal-cord.eda09d0e.glb",
+    "note": "Reference-guided spinal cord with dorsal and ventral roots, ganglia, and cauda equina. The separate gray/white-matter section is enlarged; root pairs and branching are representative, not a complete segment count.",
+    "hotspots": [
+      {
+        "id": "spinal-cord",
+        "label": "Spinal cord",
+        "meshName": "Spinal cord",
+        "detail": "Spinal cord in this educational study",
+        "position": [
+          -0.6292469501495361,
+          0.4019026756286621,
+          -0.04288215562701225
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "dorsal-root",
+        "label": "Dorsal root",
+        "meshName": "Dorsal root",
+        "detail": "Dorsal root in this educational study",
+        "position": [
+          -0.9548331499099731,
+          1.6798710823059082,
+          -0.07542888075113297
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "ventral-root",
+        "label": "Ventral root",
+        "meshName": "Ventral root",
+        "detail": "Ventral root in this educational study",
+        "position": [
+          -0.9539576172828674,
+          1.6793179512023926,
+          0.003776188939809799
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "dorsal-root-ganglion",
+        "label": "Dorsal root ganglion",
+        "meshName": "Dorsal root ganglion",
+        "detail": "Dorsal root ganglion in this educational study",
+        "position": [
+          -0.9987776279449463,
+          1.6503170728683472,
+          -0.0928187370300293
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "cauda-equina",
+        "label": "Cauda equina",
+        "meshName": "Cauda equina",
+        "detail": "Cauda equina in this educational study",
+        "position": [
+          -0.8088018894195557,
+          -1.4562709331512451,
+          -0.04288215562701225
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "white-matter-section",
+        "label": "White matter (enlarged section)",
+        "meshName": "White matter section",
+        "detail": "White matter (enlarged section) in this educational study",
+        "position": [
+          0.5692307949066162,
+          0.2021564245223999,
+          -0.042882129549980164
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "gray-matter-horn",
+        "label": "Gray matter (enlarged section)",
+        "meshName": "Gray matter horn",
+        "detail": "Gray matter (enlarged section) in this educational study",
+        "position": [
+          0.3365349769592285,
+          0.18905407190322876,
+          0.06697830557823181
+        ],
+        "color": "#c78176"
+      }
+    ]
+  },
+  "bladder": {
+    "model": "/models/bladder.c66805af.glb",
+    "note": "Anterior cutaway showing the detrusor wall, urothelium, rugae, ureteric openings, trigone, and urethra. Wall thickness and folds are exaggerated for study.",
+    "hotspots": [
+      {
+        "id": "detrusor-wall",
+        "label": "Detrusor muscle",
+        "meshName": "Detrusor wall",
+        "detail": "Detrusor muscle in this educational study",
+        "position": [
+          -5.960464477539063e-8,
+          -0.08016598224639893,
+          0.07309508323669434
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "urothelium",
+        "label": "Urothelium",
+        "meshName": "Urothelium",
+        "detail": "Urothelium in this educational study",
+        "position": [
+          -1.4901161193847656e-8,
+          -0.08016598224639893,
+          0.10183489322662354
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "trigone",
+        "label": "Trigone",
+        "meshName": "Trigone",
+        "detail": "Trigone in this educational study",
+        "position": [
+          1.7881393432617188e-7,
+          -0.7714890241622925,
+          0.04711984097957611
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "ureter--1",
+        "label": "Ureter",
+        "meshName": "Ureter -1",
+        "detail": "Ureter in this educational study",
+        "position": [
+          -0.5578153729438782,
+          0.6636300086975098,
+          -0.23013490438461304
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "urethra",
+        "label": "Urethra",
+        "meshName": "Urethra",
+        "detail": "Urethra in this educational study",
+        "position": [
+          1.73225998878479e-7,
+          -1.4242339134216309,
+          0.19750747084617615
+        ],
+        "color": "#c78176"
+      }
+    ]
+  },
+  "thyroid": {
+    "model": "/models/thyroid.82441e2c.glb",
+    "note": "One lobe is opened to show enlarged representative follicles and colloid. The other lobe, isthmus, tracheal rings, thyroid arteries, and posterior parathyroid glands provide gross-anatomy context. Follicles are not shown at life size.",
+    "hotspots": [
+      {
+        "id": "right-thyroid-lobe",
+        "label": "Right lobe",
+        "meshName": "Right thyroid lobe",
+        "detail": "Right lobe in this educational study",
+        "position": [
+          -0.6736701130867004,
+          0.06487119197845459,
+          0.1445583999156952
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "left-thyroid-lobe",
+        "label": "Left lobe cutaway",
+        "meshName": "Left thyroid lobe",
+        "detail": "Left lobe cutaway in this educational study",
+        "position": [
+          0.6736701726913452,
+          0.03329288959503174,
+          -0.07736702263355255
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "isthmus",
+        "label": "Isthmus",
+        "meshName": "Isthmus",
+        "detail": "Isthmus in this educational study",
+        "position": [
+          6.705522537231445e-8,
+          -0.37068015336990356,
+          0.24272024631500244
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "enlarged-follicle",
+        "label": "Follicles (enlarged)",
+        "meshName": "Enlarged follicle",
+        "detail": "Follicles (enlarged) in this educational study",
+        "position": [
+          0.4209989309310913,
+          -0.8333556056022644,
+          0.20771491527557373
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "parathyroid-gland",
+        "label": "Parathyroid gland",
+        "meshName": "Parathyroid gland",
+        "detail": "Parathyroid gland in this educational study",
+        "position": [
+          -0.7017397284507751,
+          -0.6368684768676758,
+          -0.3185898959636688
+        ],
+        "color": "#c78176"
+      }
+    ]
+  },
+  "spleen": {
+    "model": "/models/spleen.c3050fc7.glb",
+    "note": "Reference-guided cutaway showing capsule, red pulp, enlarged representative white-pulp follicles, trabeculae, artery, and vein. Microscopic structures are exaggerated and vessel branching is schematic.",
+    "hotspots": [
+      {
+        "id": "splenic-capsule",
+        "label": "Capsule",
+        "meshName": "Splenic capsule",
+        "detail": "Capsule in this educational study",
+        "position": [
+          0.2930465340614319,
+          -5.960464477539063e-8,
+          -0.12113651633262634
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "red-pulp",
+        "label": "Red pulp",
+        "meshName": "Red pulp",
+        "detail": "Red pulp in this educational study",
+        "position": [
+          0.2930465340614319,
+          -5.960464477539063e-8,
+          -0.08638887107372284
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "white-pulp-follicle",
+        "label": "White pulp (enlarged)",
+        "meshName": "White pulp follicle",
+        "detail": "White pulp (enlarged) in this educational study",
+        "position": [
+          -0.08072376251220703,
+          -1.3531876802444458,
+          -0.06289234757423401
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "splenic-artery",
+        "label": "Splenic artery",
+        "meshName": "Splenic artery",
+        "detail": "Splenic artery in this educational study",
+        "position": [
+          -0.7456760406494141,
+          0.14031213521957397,
+          0.251310795545578
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "splenic-vein",
+        "label": "Splenic vein",
+        "meshName": "Splenic vein",
+        "detail": "Splenic vein in this educational study",
+        "position": [
+          -0.7054872512817383,
+          -0.25150230526924133,
+          0.22832676768302917
+        ],
+        "color": "#c78176"
+      }
+    ]
+  },
+  "lymphatic": {
+    "model": "/models/lymphatic.7b4e71b7.glb",
+    "note": "Registered regional node groups, spleen, thymus, and tonsils from Z-Anatomy/BodyParts3D, with a separate enlarged schematic node cutaway showing cortex, follicles, medullary cords, and afferent/efferent vessels. Connecting body-wide vessels and the thoracic duct are not included.",
+    "hotspots": [
+      {
+        "id": "spleen",
+        "label": "Spleen",
+        "meshName": "Spleen.002",
+        "detail": "Spleen in this educational study",
+        "position": [
+          -0.3407115340232849,
+          0.614565372467041,
+          -0.02839876338839531
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "inferior-deep-lateral-cervical-nodes-l",
+        "label": "Cervical nodes",
+        "meshName": "Inferior deep lateral cervical nodes-l",
+        "detail": "Cervical nodes in this educational study",
+        "position": [
+          -0.4993162751197815,
+          1.3796601295471191,
+          0.022111745551228523
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "anterior-axillary-nodes-l",
+        "label": "Axillary nodes",
+        "meshName": "Anterior axillary nodes-l",
+        "detail": "Axillary nodes in this educational study",
+        "position": [
+          -0.24018441140651703,
+          1.1025056838989258,
+          0.0685160681605339
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "superolateral-superficial-inguinal-nodes-l",
+        "label": "Inguinal nodes",
+        "meshName": "Superolateral superficial inguinal nodes-l",
+        "detail": "Inguinal nodes in this educational study",
+        "position": [
+          -0.41595572233200073,
+          -0.2666568160057068,
+          0.14913754165172577
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "left-lobe-of-thymus",
+        "label": "Thymus",
+        "meshName": "Left lobe of thymus.001",
+        "detail": "Thymus in this educational study",
+        "position": [
+          -0.5219781398773193,
+          1.1595838069915771,
+          0.12986111640930176
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "enlarged-lymph-node-capsule",
+        "label": "Node capsule (enlarged)",
+        "meshName": "Enlarged lymph node capsule",
+        "detail": "Node capsule (enlarged) in this educational study",
+        "position": [
+          0.556826651096344,
+          -0.17249992489814758,
+          -0.07163816690444946
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "lymphoid-follicle",
+        "label": "Node follicle (enlarged)",
+        "meshName": "Lymphoid follicle",
+        "detail": "Node follicle (enlarged) in this educational study",
+        "position": [
+          0.8668267130851746,
+          -0.1499999314546585,
+          0.03500000014901161
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "medullary-cord",
+        "label": "Medullary cords (enlarged)",
+        "meshName": "Medullary cord",
+        "detail": "Medullary cords (enlarged) in this educational study",
+        "position": [
+          0.5418084859848022,
+          -0.40449023246765137,
+          -0.013044893741607666
+        ],
+        "color": "#c78176"
+      }
+    ]
+  },
+  "female-reproductive": {
+    "model": "/models/female-reproductive.c2845a81.glb",
+    "note": "Registered uterus, ovaries, tubal subdivisions, fimbriae, supporting ligaments, and uterine vessels from the Human Reference Atlas female dataset. Internal histological layers are not exposed.",
+    "hotspots": [
+      {
+        "id": "vh_f_body_of_uterus",
+        "label": "Uterine body",
+        "meshName": "VH_F_body_of_uterus",
+        "detail": "Uterine body in this educational study",
+        "position": [
+          0.11710716784000397,
+          -0.19551116228103638,
+          0.5229933261871338
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "vh_f_cervix",
+        "label": "Cervix",
+        "meshName": "VH_F_cervix",
+        "detail": "Cervix in this educational study",
+        "position": [
+          0.154273122549057,
+          -0.5476572513580322,
+          0.028948962688446045
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "vh_f_left_ovary",
+        "label": "Left ovary",
+        "meshName": "VH_F_left_ovary",
+        "detail": "Left ovary in this educational study",
+        "position": [
+          1.3863216638565063,
+          0.3492407202720642,
+          0.665595293045044
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "vh_f_fibria_of_uterine_tube_l",
+        "label": "Fimbriae",
+        "meshName": "VH_F_fibria_of_uterine_tube_L",
+        "detail": "Fimbriae in this educational study",
+        "position": [
+          1.2705644369125366,
+          0.6312034130096436,
+          0.6112310886383057
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "vh_f_ampulla_of_uterine_tube_r",
+        "label": "Ampulla",
+        "meshName": "VH_F_ampulla_of_uterine_tube_R",
+        "detail": "Ampulla in this educational study",
+        "position": [
+          -0.9489065408706665,
+          0.4087855815887451,
+          0.6863354444503784
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "vh_f_left_uterine_artery",
+        "label": "Uterine artery",
+        "meshName": "VH_F_left_uterine_artery",
+        "detail": "Uterine artery in this educational study",
+        "position": [
+          0.9200582504272461,
+          -0.343624085187912,
+          0.1874709129333496
+        ],
+        "color": "#c78176"
+      }
+    ]
+  },
+  "male-reproductive": {
+    "model": "/models/male-reproductive.a937a90b.glb",
+    "note": "Reference-guided study with one opened testis showing enlarged representative seminiferous tubules and septa, plus epididymides, deferent ducts, seminal vesicles, prostate, and prostatic urethra. It omits the penis and bladder; tubular counts and scale are schematic.",
+    "hotspots": [
+      {
+        "id": "testis--1",
+        "label": "Testis",
+        "meshName": "Testis -1",
+        "detail": "Testis in this educational study",
+        "position": [
+          -0.9801058769226074,
+          -0.9520173668861389,
+          0.09687411785125732
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "seminiferous-tubules-3",
+        "label": "Seminiferous tubules (enlarged)",
+        "meshName": "Seminiferous tubules 3",
+        "detail": "Seminiferous tubules (enlarged) in this educational study",
+        "position": [
+          0.8121172189712524,
+          -0.9658560752868652,
+          -0.0000560171902179718
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "epididymis--1",
+        "label": "Epididymis",
+        "meshName": "Epididymis -1",
+        "detail": "Epididymis in this educational study",
+        "position": [
+          -0.536597490310669,
+          -0.9717655181884766,
+          -0.08337384462356567
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "ductus-deferens--1",
+        "label": "Ductus deferens",
+        "meshName": "Ductus deferens -1",
+        "detail": "Ductus deferens in this educational study",
+        "position": [
+          -0.7847820520401001,
+          0.1349131315946579,
+          -0.18345554172992706
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "prostate",
+        "label": "Prostate",
+        "meshName": "Prostate",
+        "detail": "Prostate in this educational study",
+        "position": [
+          -0.08056044578552246,
+          0.6810036897659302,
+          -0.013839155435562134
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "seminal-vesicle--1",
+        "label": "Seminal vesicle",
+        "meshName": "Seminal vesicle -1",
+        "detail": "Seminal vesicle in this educational study",
+        "position": [
+          -0.5649309754371643,
+          1.0546610355377197,
+          -0.42901408672332764
+        ],
+        "color": "#c78176"
+      }
+    ]
+  },
+  "gallbladder": {
+    "model": "/models/gallbladder.81f4dfa5.glb",
+    "note": "Cutaway with visible wall and mucosal folds, cystic duct, common hepatic duct, common bile duct, and cystic artery. Wall thickness and folds are exaggerated; surrounding liver and duodenum are omitted.",
+    "hotspots": [
+      {
+        "id": "gallbladder-wall",
+        "label": "Gallbladder wall",
+        "meshName": "Gallbladder wall",
+        "detail": "Gallbladder wall in this educational study",
+        "position": [
+          -0.2792041599750519,
+          -0.6244131326675415,
+          -0.042038656771183014
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "mucosal-lining",
+        "label": "Mucosa",
+        "meshName": "Mucosal lining",
+        "detail": "Mucosa in this educational study",
+        "position": [
+          -0.2792041599750519,
+          -0.624413251876831,
+          -0.006286904215812683
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "cystic-duct",
+        "label": "Cystic duct",
+        "meshName": "Cystic duct",
+        "detail": "Cystic duct in this educational study",
+        "position": [
+          0.08258041739463806,
+          0.928070068359375,
+          0.22300465404987335
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "common-hepatic-duct",
+        "label": "Common hepatic duct",
+        "meshName": "Common hepatic duct",
+        "detail": "Common hepatic duct in this educational study",
+        "position": [
+          0.49387887120246887,
+          1.5729261636734009,
+          0.22300466895103455
+        ],
+        "color": "#c78176"
+      },
+      {
+        "id": "common-bile-duct",
+        "label": "Common bile duct",
+        "meshName": "Common bile duct",
+        "detail": "Common bile duct in this educational study",
+        "position": [
+          0.6426612138748169,
+          -0.0020515918731689453,
+          0.22300466895103455
+        ],
+        "color": "#c78176"
+      }
+    ]
+  }
+}

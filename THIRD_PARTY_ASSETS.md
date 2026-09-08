@@ -1,5 +1,35 @@
 # Third-party anatomy assets
 
+## Current detailed studies (September 2026)
+
+The detailed-study manifest (`app/lib/detailed-studies.json`) overrides the
+ear, spinal cord, bladder, thyroid, isolated spleen, lymphatic, female and male
+reproductive, and gallbladder models. The ear, spinal cord, bladder, thyroid,
+spleen, male reproductive and gallbladder replacements are original
+reference-guided Blender teaching geometry, released under CC BY-SA 4.0.
+The microscopic and cross-section features are enlarged schematic examples,
+not exact counts, scans, or clinically validated patient anatomy.
+
+The regional lymphoid model derives from **Z-Anatomy — The libre 3D atlas of
+anatomy — CC-BY-SA 4.0**, Gauthier Kervyn and contributors, based on
+**BodyParts3D — The Database Center for Life Science — CC-BY-SA 2.1 Japan**.
+Source: https://github.com/Z-Anatomy/Models-of-human-anatomy (Startup.blend,
+2023-05-02). Modifications: select regional lymphoid structures; bake
+transforms; rebuild matte materials; normalize; add an original enlarged node
+cutaway; compress. This derivative and its renders remain CC BY-SA 4.0.
+The NC-restricted inner-ear and kidney meshes are not included.
+
+Female reproductive geometry is by **Kristen Browne and Heidi Schlehlein**,
+*3D Reference Organ Set for Female, v1.5*, HuBMAP/Human Reference Atlas, based
+on the National Library of Medicine Visible Human Female. CC BY 4.0.
+https://doi.org/10.48539/HBM352.BTSQ.586
+https://cdn.humanatlas.io/digital-objects/ref-organ/united-female/v1.5/metadata.json
+Modifications: select uterus/ovaries/tubes/supporting ligaments/uterine vessels,
+preserve registration, normalize, render, and compress. Histological layers
+are not exposed. Previews inherit their source model licenses.
+
+Earlier provenance below applies to models not replaced by this manifest.
+
 The expanded interactive specimens include geometry derived from BodyParts3D:
 
 > BodyParts3D, © The Database Center for Life Science, licensed under Creative Commons Attribution-Share Alike 2.1 Japan.

@@ -15,11 +15,12 @@ test("refined delivery assets decode, match their hashes, and retain labelled st
   const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({"meshopt.decoder": MeshoptDecoder});
   const manifest = JSON.parse(await read("app/lib/refined-models.json"));
   const additional = await read("app/lib/additional-organs.ts");
+  const detailed = JSON.parse(await read("app/lib/detailed-studies.json"));
   assert.equal(Object.keys(manifest).length, 15);
   for (const [id, record] of Object.entries(manifest)) {
     const bytes = await readFile(new URL(`public${record.url}`, root));
     assert.equal(bytes.length, record.bytes);
-    assert.ok(record.bytes < (id === "muscles" ? 7_000_000 : id === "skeleton" ? 4_000_000 : 700_000), `${id}: transfer budget`);
+    assert.ok(record.bytes < (id === "muscles" ? 7_000_000 : id === "skeleton" ? 4_000_000 : detailed[id] ? 2_000_000 : 700_000), `${id}: transfer budget`);
     assert.ok(record.url.includes(createHash("sha256").update(bytes).digest("hex").slice(0,8)));
     const doc = await io.readBinary(bytes);
     const nodes = doc.getRoot().listNodes().filter(node => node.getMesh());
@@ -33,7 +34,13 @@ test("refined delivery assets decode, match their hashes, and retain labelled st
       assert.ok(positions.getArray().every(Number.isFinite));
       assert.ok(primitive.getIndices().getArray().every(index => index < positions.getCount()));
     }
-    if (["spleen", "esophagus", "knee"].includes(id)) {
+    if (detailed[id]) {
+      const names = new Set(nodes.map(node => node.getName()));
+      assert.ok(detailed[id].hotspots.length >= 4);
+      for (const h of detailed[id].hotspots) assert.ok(names.has(h.meshName), `${id}: ${h.meshName} exists`);
+      assert.equal(detailed[id].model,record.url);
+      assert.ok(detailed[id].note.length > 80);
+    } else if (["spleen", "esophagus", "knee"].includes(id)) {
       const section = additional.split(`id:'${id}'`)[1].split(/\n  },/)[0];
       const names = new Set(nodes.map(node => node.getName()));
       const anchors = [...section.matchAll(/meshName:'([^']+)'/g)];
@@ -140,7 +147,8 @@ test("uses versioned models, modern Three timing, and durable cache policy", asy
     assert.ok(glb.meshes.length >= 10, `${id} should contain detailed, individually selectable anatomy`);
     assert.ok(vertexCount > 1000 && vertexCount < 650_000, `${id} should retain anatomy within a bounded mesh budget`);
     assert.ok(glb.extensionsRequired.includes('EXT_meshopt_compression'), `${id} should use compressed delivery`);
-    if (id !== "muscles") assert.ok(glb.images.length >= 3, `${id} should embed color, normal, and roughness imagery`);
+    const detailed = JSON.parse(await read("app/lib/detailed-studies.json"));
+    if (id !== "muscles" && !detailed[id]) assert.ok(glb.images.length >= 3, `${id} should embed color, normal, and roughness imagery`);
     else assert.ok(glb.materials.length > 0, "repaired muscles use UV-independent matte anatomy colors");
     if (id === "skeleton") assert.ok(glb.meshes.length >= 80, "skeleton should retain the full BodyParts3D bone set");
     if (id === "muscles") assert.ok(glb.meshes.length >= 120, "muscles should retain the registered scan-based full-body system");

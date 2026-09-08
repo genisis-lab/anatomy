@@ -18,6 +18,7 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "models:build": "node scripts/build-anatomy-models.mjs",
     "models:refine": "node scripts/refine-atlas.mjs",
+    "models:detail:pack": "node scripts/pack-detailed-studies.mjs",
     "db:generate": "drizzle-kit generate",
     "postinstall": "patch-package"
   },

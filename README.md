@@ -48,6 +48,31 @@ Content is educational and is not medical advice. Reference links and the conten
 
 ## Blender model refinement
 
+### Detailed teaching studies
+
+`app/lib/detailed-studies.json` is the current override for nine expanded
+studies. It includes matching named-mesh labels and visible model-scope notes.
+These are reference-guided educational cutaways, not patient-specific or
+clinically validated models. Only free reusable assets are used.
+
+To rebuild from a clean checkout:
+
+1. Download `Z-Anatomy.zip` from the Z-Anatomy source linked in
+   `THIRD_PARTY_ASSETS.md` and extract only `Startup.blend` to
+   `work/z-anatomy/Z-Anatomy/Startup.blend`. Disable embedded scripts.
+2. Download the HRA female v1.5 GLB from the metadata distribution to
+   `work/z-anatomy/hra-female.glb`.
+3. Run Blender with `-b --disable-autoexec` and the Z-Anatomy blend, then
+   `--python scripts/extract-atlas-studies.py -- lymphatic`.
+4. Run `node scripts/extract-hra-studies.mjs`, then Blender with
+   `-b --factory-startup --python scripts/render-hra-studies.py`.
+5. Run Blender with `-b --factory-startup --python scripts/build-detailed-studies.py`.
+   Review the PNGs and editable `.blend` files in `work/detailed-studies/`.
+6. Run `npm run models:detail:pack` to update the versioned GLBs, previews,
+   size manifest, and labels. Run this after any legacy refinement rebuild.
+
+### Earlier surface-refinement pipeline
+
 `npm run models:refine` rebuilds the 12 expanded specimens and the spleen,
 esophagus wall cutaway, and right-knee bone study. Requires Blender (tested with
 5.2.1); set `BLENDER_BIN` to override the macOS application path. The pipeline
