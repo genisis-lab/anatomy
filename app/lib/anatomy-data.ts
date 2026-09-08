@@ -1,4 +1,5 @@
 import { expandedOrgans } from "./expanded-organs";
+import { additionalOrgans } from "./additional-organs";
 import type { OrganId } from "./organ-ids";
 
 export type { OrganId } from "./organ-ids";
@@ -7,6 +8,8 @@ export type Hotspot = {
   id: string;
   label: string;
   detail: string;
+  /** Optional named structure constrains surface snapping in layered studies. */
+  meshName?: string;
   position: [number, number, number];
   color: string;
 };
@@ -37,6 +40,7 @@ export type Organ = {
   /** Whether `/anatomy/<id>/*.webp` illustrations exist. Organs without them
    *  fall back to the accent glyph rather than a broken image. */
   illustrated: boolean;
+  specimenOnly?: boolean;
 };
 
 const coreOrgans: Organ[] = [
@@ -302,6 +306,6 @@ const coreOrgans: Organ[] = [
   },
 ];
 
-export const organs: Organ[] = [...coreOrgans, ...expandedOrgans];
+export const organs: Organ[] = [...coreOrgans, ...expandedOrgans, ...additionalOrgans];
 
 export const organById = Object.fromEntries(organs.map((organ) => [organ.id, organ])) as Record<OrganId, Organ>;

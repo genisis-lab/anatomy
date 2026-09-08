@@ -17,6 +17,7 @@
     "test": "npm run test:source && npm run typecheck && npm run build && npm run test:rendered",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "models:build": "node scripts/build-anatomy-models.mjs",
+    "models:refine": "node scripts/refine-atlas.mjs",
     "db:generate": "drizzle-kit generate",
     "postinstall": "patch-package"
   },
@@ -32,6 +33,9 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.52.0",
     "@cloudflare/workers-types": "5.20260813.1",
+    "@gltf-transform/core": "4.5.0",
+    "@gltf-transform/extensions": "4.5.0",
+    "@gltf-transform/functions": "4.5.0",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
