@@ -1041,3 +1041,5 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   .study-next > button { width: 100%; justify-content: space-between; }
   .site-footer { padding-bottom: 16px; }
 }
+.specimen-context { height: 100%; padding: 1.25rem; font-size: .875rem; line-height: 1.55; text-align: left; overflow: auto; }
+.specimen-context p { margin-top: .5rem; }

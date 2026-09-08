@@ -12,6 +12,12 @@ export function OrganArt({
   alt: string;
   size?: number;
 }) {
+  if (organ.specimenOnly && asset === "location") {
+    return <div className="specimen-context"><strong>{organ.name}</strong><p>{organ.location}</p></div>;
+  }
+  if (organ.specimenOnly && asset === "microscopic") {
+    return <div className="specimen-context"><strong>Tissue context</strong><p>{organ.medical}</p></div>;
+  }
   if (!organ.illustrated) {
     return <ProceduralOrganArt organ={organ} asset={asset} alt={alt} />;
   }
@@ -21,7 +27,7 @@ export function OrganArt({
     // eslint-disable-next-line @next/next/no-img-element
     <img
       key={`${organ.id}-${asset}`}
-      src={`/anatomy/${organ.id}/${asset}.webp`}
+      src={`/anatomy/${organ.id}/${organ.specimenOnly && asset === "compare" ? "organ" : asset}.webp`}
       alt={alt}
       width={size}
       height={size}

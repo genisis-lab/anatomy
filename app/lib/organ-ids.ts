@@ -20,7 +20,9 @@ export const ORGAN_IDS = [
   "male-reproductive",
   "gallbladder",
   "airway-diaphragm",
+  "spleen",
+  "esophagus",
+  "knee",
 ] as const;
 
 export type OrganId = (typeof ORGAN_IDS)[number];
-

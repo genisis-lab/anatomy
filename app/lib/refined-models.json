@@ -1,0 +1,107 @@
+{
+  "stomach": {
+    "url": "/models/stomach.d20b9824.glb",
+    "bytes": 235112,
+    "id": "stomach",
+    "meshes": 14,
+    "triangles": 18984
+  },
+  "skeleton": {
+    "url": "/models/skeleton.b0ea6dd8.glb",
+    "bytes": 3718884,
+    "id": "skeleton",
+    "meshes": 84,
+    "triangles": 341875
+  },
+  "muscles": {
+    "url": "/models/muscles.35ea6621.glb",
+    "bytes": 3201452,
+    "id": "muscles",
+    "meshes": 135,
+    "triangles": 459269
+  },
+  "ear": {
+    "url": "/models/ear.a07ccf85.glb",
+    "bytes": 214424,
+    "id": "ear",
+    "meshes": 11,
+    "triangles": 19956
+  },
+  "spinal-cord": {
+    "url": "/models/spinal-cord.c9e0da57.glb",
+    "bytes": 301920,
+    "id": "spinal-cord",
+    "meshes": 43,
+    "triangles": 33408
+  },
+  "bladder": {
+    "url": "/models/bladder.8d71de12.glb",
+    "bytes": 229100,
+    "id": "bladder",
+    "meshes": 26,
+    "triangles": 19665
+  },
+  "thyroid": {
+    "url": "/models/thyroid.d63e61e5.glb",
+    "bytes": 276416,
+    "id": "thyroid",
+    "meshes": 45,
+    "triangles": 33424
+  },
+  "lymphatic": {
+    "url": "/models/lymphatic.128717d3.glb",
+    "bytes": 373660,
+    "id": "lymphatic",
+    "meshes": 40,
+    "triangles": 35816
+  },
+  "female-reproductive": {
+    "url": "/models/female-reproductive.4c8e17dc.glb",
+    "bytes": 260668,
+    "id": "female-reproductive",
+    "meshes": 31,
+    "triangles": 26224
+  },
+  "male-reproductive": {
+    "url": "/models/male-reproductive.4f704081.glb",
+    "bytes": 243200,
+    "id": "male-reproductive",
+    "meshes": 15,
+    "triangles": 22772
+  },
+  "gallbladder": {
+    "url": "/models/gallbladder.a596a2ee.glb",
+    "bytes": 243020,
+    "id": "gallbladder",
+    "meshes": 12,
+    "triangles": 19840
+  },
+  "airway-diaphragm": {
+    "url": "/models/airway-diaphragm.02949d65.glb",
+    "bytes": 318904,
+    "id": "airway-diaphragm",
+    "meshes": 37,
+    "triangles": 30642
+  },
+  "spleen": {
+    "url": "/models/spleen.ddad9d16.glb",
+    "bytes": 93388,
+    "id": "spleen",
+    "meshes": 7,
+    "triangles": 11912
+  },
+  "esophagus": {
+    "url": "/models/esophagus.27a859d0.glb",
+    "bytes": 154368,
+    "id": "esophagus",
+    "meshes": 11,
+    "triangles": 48512
+  },
+  "knee": {
+    "url": "/models/knee.7219f0c8.glb",
+    "bytes": 568128,
+    "id": "knee",
+    "meshes": 4,
+    "triangles": 94972
+  }
+}

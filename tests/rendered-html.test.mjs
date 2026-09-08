@@ -32,6 +32,9 @@ test("server-renders the complete Anatomy Atelier experience", async () => {
   assert.match(html, /Interactive education, not medical advice/);
   for (const specimen of [
     "Stomach",
+    "Esophagus",
+    "Knee",
+    "Spleen",
     "Skeleton",
     "Muscles",
     "Ear",

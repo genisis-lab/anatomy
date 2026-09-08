@@ -230,7 +230,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
 
   const selectOrgan = (id: OrganId, nextView: ViewId = "explore") => {
     if (organById[id].illustrated) {
-      ["organ", "microscopic", "compare", "location"].forEach((asset) => {
+      (organById[id].specimenOnly ? ["organ"] : ["organ", "microscopic", "compare", "location"]).forEach((asset) => {
         const image = new Image();
         image.src = `/anatomy/${id}/${asset}.webp`;
       });
@@ -576,7 +576,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
             <section className="learning-cards" aria-label={`${organ.name} learning resources`}>
               <article className="curiosity-card"><span>✿</span><p>Learning is<br />an act of curiosity.</p><em>Keep exploring</em></article>
               <article>
-                <header><div><em>Microscopic view</em><h3>{organ.tissue}</h3></div><Microscope size={17} /></header>
+                <header><div><em>{organ.specimenOnly ? "Tissue context" : "Microscopic view"}</em><h3>{organ.tissue}</h3></div><Microscope size={17} /></header>
                 <div className="microscope-visual organ-card-image"><OrganArt organ={organ} asset="microscopic" alt={`${organ.name} microscopic tissue view`} /></div>
                 <button onClick={() => openLearning("lesson")}>Study the tissue <ArrowRight size={14} /></button>
               </article>

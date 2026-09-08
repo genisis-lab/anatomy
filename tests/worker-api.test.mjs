@@ -59,7 +59,7 @@ test("round-trips normalized learner state in an anonymous session", async () =>
   assert.match(cookie ?? "", /anatomy_session=.*HttpOnly; SameSite=Lax; Secure/);
 
   const state = {
-    bookmarks: ["heart", "stomach", "skeleton", "not-an-organ"],
+    bookmarks: ["heart", "stomach", "skeleton", "spleen", "esophagus", "knee", "not-an-organ"],
     completedLessons: ["brain", "airway-diaphragm"],
     notes: { heart: "Follow the chambers", thyroid: "Compare the two lobes" },
     structureNotes: { heart: { aorta: "Carries blood away", "bad key!": "drop" } },
@@ -76,7 +76,7 @@ test("round-trips normalized learner state in an anonymous session", async () =>
 
   const read = await worker.fetch(request("/api/state", { headers: { cookie } }), env, ctx);
   assert.deepEqual(await read.json(), {
-    bookmarks: ["heart", "stomach", "skeleton"],
+    bookmarks: ["heart", "stomach", "skeleton", "spleen", "esophagus", "knee"],
     completedLessons: ["brain", "airway-diaphragm"],
     notes: { heart: "Follow the chambers", thyroid: "Compare the two lobes" },
     structureNotes: { heart: { aorta: "Carries blood away" } },
