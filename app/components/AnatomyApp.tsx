@@ -535,6 +535,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
                   <span className="specimen-stamp"><OrganArt organ={organ} asset="organ" alt={`${organ.name} anatomical illustration`} size={92} /></span>
                 </div>
                 <p className="description" data-reveal>{organ.description}</p>
+                {organ.modelNote && <details className="model-scope"><summary>About this 3D study</summary><p>{organ.modelNote}</p><a href="/model-credits">Model sources and licenses</a></details>}
                 <div className="rule" />
                 <h2 data-reveal>{t.info.keyFacts}</h2>
                 <dl className="key-facts">

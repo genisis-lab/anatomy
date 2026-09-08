@@ -1,5 +1,6 @@
 import { expandedOrgans } from "./expanded-organs";
 import { additionalOrgans } from "./additional-organs";
+import detailedStudies from "./detailed-studies.json";
 import type { OrganId } from "./organ-ids";
 
 export type { OrganId } from "./organ-ids";
@@ -41,6 +42,7 @@ export type Organ = {
    *  fall back to the accent glyph rather than a broken image. */
   illustrated: boolean;
   specimenOnly?: boolean;
+  modelNote?: string;
 };
 
 const coreOrgans: Organ[] = [
@@ -306,6 +308,11 @@ const coreOrgans: Organ[] = [
   },
 ];
 
-export const organs: Organ[] = [...coreOrgans, ...expandedOrgans, ...additionalOrgans];
+export const organs: Organ[] = [...coreOrgans, ...expandedOrgans, ...additionalOrgans].map((organ) => {
+  const study = detailedStudies[organ.id as keyof typeof detailedStudies];
+  if (!study) return organ;
+  return { ...organ, model: study.model, modelNote: study.note, specimenOnly: true,
+    hotspots: study.hotspots.map((hotspot) => ({ ...hotspot, position: hotspot.position as [number, number, number] })) };
+});
 
 export const organById = Object.fromEntries(organs.map((organ) => [organ.id, organ])) as Record<OrganId, Organ>;

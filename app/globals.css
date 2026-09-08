@@ -1043,3 +1043,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 }
 .specimen-context { height: 100%; padding: 1.25rem; font-size: .875rem; line-height: 1.55; text-align: left; overflow: auto; }
 .specimen-context p { margin-top: .5rem; }
+.model-scope { margin: .8rem 0; font-size: .875rem; line-height: 1.6; }
+.model-scope summary { cursor: pointer; }
+.model-scope p { margin: .5rem 0; }

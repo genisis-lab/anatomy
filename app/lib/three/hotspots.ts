@@ -357,7 +357,7 @@ function snapToSurface(hotspots: Hotspot[], pivot: THREE.Group, meshes: THREE.Me
       for (let h = 0; h < targets.length; h += 1) {
         const requiredMesh = hotspots[h].meshName;
         // GLTFLoader sanitizes whitespace in object names.
-        if (requiredMesh && mesh.name.replaceAll(" ", "_") !== requiredMesh.replaceAll(" ", "_")) continue;
+        if (requiredMesh && THREE.PropertyBinding.sanitizeNodeName(mesh.name) !== THREE.PropertyBinding.sanitizeNodeName(requiredMesh)) continue;
         const distance = vertex.distanceToSquared(targets[h]);
         const cosine = radius > 1e-5 ? vertex.dot(directions[h]) / radius : 1;
         for (let t = 0; t < DIRECTION_CONES.length; t += 1) {

@@ -21,60 +21,60 @@
     "triangles": 459269
   },
   "ear": {
-    "url": "/models/ear.a07ccf85.glb",
-    "bytes": 214424,
+    "url": "/models/ear.eb7050f0.glb",
+    "bytes": 323508,
     "id": "ear",
-    "meshes": 11,
-    "triangles": 19956
+    "meshes": 16,
+    "triangles": 52884
   },
   "spinal-cord": {
-    "url": "/models/spinal-cord.c9e0da57.glb",
-    "bytes": 301920,
+    "url": "/models/spinal-cord.eda09d0e.glb",
+    "bytes": 230428,
     "id": "spinal-cord",
-    "meshes": 43,
-    "triangles": 33408
+    "meshes": 109,
+    "triangles": 88048
   },
   "bladder": {
-    "url": "/models/bladder.8d71de12.glb",
-    "bytes": 229100,
+    "url": "/models/bladder.c66805af.glb",
+    "bytes": 142336,
     "id": "bladder",
-    "meshes": 26,
-    "triangles": 19665
+    "meshes": 16,
+    "triangles": 20953
   },
   "thyroid": {
-    "url": "/models/thyroid.d63e61e5.glb",
-    "bytes": 276416,
+    "url": "/models/thyroid.82441e2c.glb",
+    "bytes": 1091772,
     "id": "thyroid",
-    "meshes": 45,
-    "triangles": 33424
+    "meshes": 77,
+    "triangles": 248164
   },
   "lymphatic": {
-    "url": "/models/lymphatic.128717d3.glb",
-    "bytes": 373660,
+    "url": "/models/lymphatic.7b4e71b7.glb",
+    "bytes": 1273968,
     "id": "lymphatic",
-    "meshes": 40,
-    "triangles": 35816
+    "meshes": 175,
+    "triangles": 145690
   },
   "female-reproductive": {
-    "url": "/models/female-reproductive.4c8e17dc.glb",
-    "bytes": 260668,
+    "url": "/models/female-reproductive.c2845a81.glb",
+    "bytes": 1043528,
     "id": "female-reproductive",
-    "meshes": 31,
-    "triangles": 26224
+    "meshes": 39,
+    "triangles": 156810
   },
   "male-reproductive": {
-    "url": "/models/male-reproductive.4f704081.glb",
-    "bytes": 243200,
+    "url": "/models/male-reproductive.a937a90b.glb",
+    "bytes": 266132,
     "id": "male-reproductive",
-    "meshes": 15,
-    "triangles": 22772
+    "meshes": 34,
+    "triangles": 51476
   },
   "gallbladder": {
-    "url": "/models/gallbladder.a596a2ee.glb",
-    "bytes": 243020,
+    "url": "/models/gallbladder.81f4dfa5.glb",
+    "bytes": 87416,
     "id": "gallbladder",
-    "meshes": 12,
-    "triangles": 19840
+    "meshes": 17,
+    "triangles": 9304
   },
   "airway-diaphragm": {
     "url": "/models/airway-diaphragm.02949d65.glb",
@@ -84,11 +84,11 @@
     "triangles": 30642
   },
   "spleen": {
-    "url": "/models/spleen.ddad9d16.glb",
-    "bytes": 93388,
+    "url": "/models/spleen.c3050fc7.glb",
+    "bytes": 199960,
     "id": "spleen",
-    "meshes": 7,
-    "triangles": 11912
+    "meshes": 40,
+    "triangles": 41384
   },
   "esophagus": {
     "url": "/models/esophagus.27a859d0.glb",
