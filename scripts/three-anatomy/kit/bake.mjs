@@ -147,7 +147,7 @@ export async function bakeSpecimen(specimen, { log = console.log } = {}) {
   const group = new THREE.Group();
   group.name = specimen.id;
   const materials = new Map();
-  const ctx = { x: 0, y: 0, z: 0, nx: 0, ny: 0, nz: 1, ao: 1, curv: 0, cap: 0, along: 0, span };
+  const ctx = { x: 0, y: 0, z: 0, nx: 0, ny: 0, nz: 1, ao: 1, curv: 0, cap: 0, along: 0, index: 0, span };
   for (const { part, geometry, local } of built) {
     const ao = part.occlude === false ? null : occlusion[occluderIndex++];
     const curv = curvature(geometry, part.curvatureScale ?? span * 0.012);
@@ -164,6 +164,7 @@ export async function bakeSpecimen(specimen, { log = console.log } = {}) {
       ctx.curv = curv[v];
       ctx.cap = cap ? cap[v] : 0;
       ctx.along = along ? along[v] : 0;
+      ctx.index = v;
       if (process.env.BAKE_DEBUG === "flat") { ctx.ao = 1; ctx.curv = 0; }
       const albedo = process.env.BAKE_DEBUG === "white" ? [0.8, 0.8, 0.8] : part.paint ? part.paint(ctx) : [0.8, 0.5, 0.45];
       const occluded = 1 - shade.ao * (1 - Math.pow(ctx.ao, 1.15));

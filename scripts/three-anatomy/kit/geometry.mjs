@@ -12,12 +12,23 @@ const toVector = (p) => (p.isVector3 ? p.clone() : new THREE.Vector3(...p));
  * TubeGeometry it closes its ends and supports radius as a function of t,
  * so vessels narrow naturally toward their terminal branches.
  */
-export function taperedTube(points, radius, { radial = 14, segments, caps = "both", closed = false } = {}) {
+export function taperedTube(points, radius, { radial = 14, segments, caps = "both", closed = false, up, flatten = 1 } = {}) {
   const curve = new THREE.CatmullRomCurve3(points.map(toVector), closed, "centripetal");
   const length = curve.getLength();
   const r0 = typeof radius === "function" ? radius(0) : radius;
   const steps = segments ?? Math.max(6, Math.min(240, Math.ceil(length / Math.max(r0 * 0.7, 1e-3))));
   const frames = curve.computeFrenetFrames(steps, closed);
+  // Ribbons (ligaments, tendons) keep a fixed thickness direction `up` and
+  // are squashed along it by `flatten`.
+  if (up) {
+    const reference = new THREE.Vector3(...up).normalize();
+    for (let i = 0; i <= steps; i += 1) {
+      const T = frames.tangents[i];
+      const Nn = reference.clone().addScaledVector(T, -reference.dot(T)).normalize();
+      frames.normals[i].copy(Nn);
+      frames.binormals[i].crossVectors(T, Nn).normalize();
+    }
+  }
   const positions = [];
   const normals = [];
   const indices = [];
@@ -33,8 +44,10 @@ export function taperedTube(points, radius, { radial = 14, segments, caps = "bot
     for (let j = 0; j < radial; j += 1) {
       const angle = (j / radial) * Math.PI * 2;
       const sin = Math.sin(angle), cos = -Math.cos(angle);
-      normal.set(cos * N.x + sin * B.x, cos * N.y + sin * B.y, cos * N.z + sin * B.z).normalize();
-      positions.push(point.x + r * normal.x, point.y + r * normal.y, point.z + r * normal.z);
+      // Offset on an ellipse; its normal scales the other way.
+      const ox = cos * flatten * N.x + sin * B.x, oy = cos * flatten * N.y + sin * B.y, oz = cos * flatten * N.z + sin * B.z;
+      normal.set(cos / flatten * N.x + sin * B.x, cos / flatten * N.y + sin * B.y, cos / flatten * N.z + sin * B.z).normalize();
+      positions.push(point.x + r * ox, point.y + r * oy, point.z + r * oz);
       normals.push(normal.x, normal.y, normal.z);
       along.push(t * length);
     }
@@ -84,6 +97,7 @@ export function taperedTube(points, radius, { radial = 14, segments, caps = "bot
 export function merge(geometries) {
   const list = geometries.filter(Boolean).map((geometry) => {
     const g = geometry.index ? geometry : geometry.clone();
+    g.userData = geometry.userData;
     if (!g.index) {
       const count = g.attributes.position.count;
       g.setIndex([...Array(count).keys()]);
@@ -94,10 +108,11 @@ export function merge(geometries) {
   });
   if (!list.length) return null;
   const merged = mergeGeometries(list, false);
-  // Carry per-vertex painting data (tube arc length, cap flags) through.
-  for (const key of ["along", "cap"]) {
-    if (!list.some((g) => g.userData[key])) continue;
-    const Type = key === "cap" ? Uint8Array : Float32Array;
+  // Carry per-vertex painting data (tube arc length, cap flags, axial
+  // coordinates…) through the merge.
+  const keys = new Set(list.flatMap((g) => Object.keys(g.userData).filter((key) => ArrayBuffer.isView(g.userData[key]) && g.userData[key].length === g.attributes.position.count)));
+  for (const key of keys) {
+    const Type = list.find((g) => g.userData[key]).userData[key].constructor;
     const out = new Type(merged.attributes.position.count);
     let offset = 0;
     for (const g of list) {
@@ -244,4 +259,114 @@ export function ellipsoidGeometry(center, radii, { width = 20, height = 14, rota
   const geometry = new THREE.SphereGeometry(1, width, height);
   geometry.deleteAttribute("uv");
   return bakeTransform(geometry, { position: center, rotation, scale: radii });
+}
+
+/**
+ * Cuts a closed triangle mesh with a plane, keeping the side where
+ * n·p ≤ offset, and closes the opening with a flat cap. Cap vertices are
+ * flagged in `userData.cap` and carry their distance to the cut outline in
+ * `userData.rim`, so a painter can draw cortical bone around marrow.
+ */
+export function clipMesh(geometry, normalArray, offset) {
+  const n = new THREE.Vector3(...normalArray).normalize();
+  const src = geometry.index ? geometry : geometry.clone().setIndex([...Array(geometry.attributes.position.count).keys()]);
+  const P = src.attributes.position.array;
+  const N = src.attributes.normal.array;
+  const I = src.index.array;
+  const positions = Array.from(P);
+  const normals = Array.from(N);
+  const distance = (v) => P[v * 3] * n.x + P[v * 3 + 1] * n.y + P[v * 3 + 2] * n.z - offset;
+  const cut = new Map();
+  const point = (a, b) => {
+    const key = a < b ? `${a}_${b}` : `${b}_${a}`;
+    if (cut.has(key)) return cut.get(key);
+    const da = distance(a), db = distance(b);
+    const t = da / (da - db);
+    const index = positions.length / 3;
+    for (let c = 0; c < 3; c += 1) {
+      positions.push(P[a * 3 + c] + (P[b * 3 + c] - P[a * 3 + c]) * t);
+      normals.push(N[a * 3 + c] + (N[b * 3 + c] - N[a * 3 + c]) * t);
+    }
+    cut.set(key, index);
+    return index;
+  };
+  const triangles = [];
+  const segments = [];
+  for (let t = 0; t < I.length; t += 3) {
+    const tri = [I[t], I[t + 1], I[t + 2]];
+    const inside = tri.map((v) => distance(v) <= 0);
+    const count = inside.filter(Boolean).length;
+    if (count === 3) { triangles.push(...tri); continue; }
+    if (count === 0) continue;
+    // Rotate so the odd vertex out comes first.
+    const order = [0, 1, 2].map((i) => (i + inside.findIndex((value) => value === (count === 1))) % 3);
+    const [a, b, c] = order.map((i) => tri[i]);
+    if (count === 1) {
+      const ab = point(a, b), ac = point(a, c);
+      triangles.push(a, ab, ac);
+      segments.push([ab, ac]);
+    } else {
+      const ab = point(a, b), ac = point(a, c);
+      triangles.push(ab, b, c, ab, c, ac);
+      segments.push([ac, ab]);
+    }
+  }
+  // Chain segments into closed outlines and triangulate each in the plane.
+  const next = new Map();
+  segments.forEach(([from, to]) => next.set(from, to));
+  const u = new THREE.Vector3(Math.abs(n.y) < 0.9 ? 0 : 1, Math.abs(n.y) < 0.9 ? 1 : 0, 0).cross(n).normalize();
+  const w = n.clone().cross(u);
+  const capStart = positions.length / 3;
+  const outlines = [];
+  const visited = new Set();
+  for (const [startVertex] of next) {
+    if (visited.has(startVertex)) continue;
+    const loop = [];
+    let v = startVertex;
+    while (v !== undefined && !visited.has(v)) { visited.add(v); loop.push(v); v = next.get(v); }
+    if (loop.length >= 3) outlines.push(loop);
+  }
+  const rimSegments = [];
+  for (const loop of outlines) {
+    const contour = loop.map((v) => {
+      const p = new THREE.Vector3(positions[v * 3], positions[v * 3 + 1], positions[v * 3 + 2]);
+      return new THREE.Vector2(p.dot(u), p.dot(w));
+    });
+    contour.forEach((p, i) => rimSegments.push([p, contour[(i + 1) % contour.length]]));
+    const base = positions.length / 3;
+    loop.forEach((v) => {
+      positions.push(positions[v * 3], positions[v * 3 + 1], positions[v * 3 + 2]);
+      normals.push(n.x, n.y, n.z);
+    });
+    const faces = THREE.ShapeUtils.triangulateShape(contour, []);
+    const clockwise = THREE.ShapeUtils.isClockWise(contour);
+    for (const [a, b, c] of faces) triangles.push(...(clockwise ? [base + a, base + b, base + c] : [base + a, base + c, base + b]));
+  }
+  const out = new THREE.BufferGeometry();
+  out.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  out.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
+  out.setIndex(triangles);
+  const total = positions.length / 3;
+  const cap = new Uint8Array(total);
+  const rim = new Float32Array(total);
+  const q = new THREE.Vector2(), closest = new THREE.Vector2();
+  for (let v = capStart; v < total; v += 1) {
+    cap[v] = 1;
+    const p = new THREE.Vector3(positions[v * 3], positions[v * 3 + 1], positions[v * 3 + 2]);
+    q.set(p.dot(u), p.dot(w));
+    let best = Infinity;
+    for (const [a, b] of rimSegments) {
+      const ab = b.clone().sub(a);
+      const h = THREE.MathUtils.clamp(q.clone().sub(a).dot(ab) / Math.max(ab.lengthSq(), 1e-12), 0, 1);
+      closest.copy(a).addScaledVector(ab, h);
+      best = Math.min(best, closest.distanceTo(q));
+    }
+    rim[v] = best;
+  }
+  out.userData = { ...geometry.userData, cap, rim };
+  // Drop painting arrays that no longer line up with the clipped vertices.
+  for (const key of Object.keys(out.userData)) {
+    if (ArrayBuffer.isView(out.userData[key]) && out.userData[key].length !== total) delete out.userData[key];
+  }
+  return compact(out);
 }

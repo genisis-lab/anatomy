@@ -238,13 +238,14 @@ export function compact(geometry) {
   const remapped = new Uint32Array(index.length);
   for (let i = 0; i < index.length; i += 1) remapped[i] = used[index[i]];
   out.setIndex(new THREE.BufferAttribute(remapped, 1));
-  const cap = geometry.userData.cap;
-  if (cap) {
-    const nextCap = new Uint8Array(next);
-    for (let v = 0; v < count; v += 1) if (used[v] >= 0) nextCap[used[v]] = cap[v];
-    out.userData = { ...geometry.userData, cap: nextCap };
-  } else {
-    out.userData = { ...geometry.userData };
+  // Remap every per-vertex painting array (cap flags, rim distance, axial
+  // coordinates…) alongside the attributes.
+  out.userData = { ...geometry.userData };
+  for (const [key, value] of Object.entries(geometry.userData)) {
+    if (!ArrayBuffer.isView(value) || value.length !== count) continue;
+    const remappedValue = new value.constructor(next);
+    for (let v = 0; v < count; v += 1) if (used[v] >= 0) remappedValue[used[v]] = value[v];
+    out.userData[key] = remappedValue;
   }
   return out;
 }

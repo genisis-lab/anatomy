@@ -10,6 +10,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { MeshoptSimplifier } from "meshoptimizer";
 import { bakeSpecimen } from "./kit/bake.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -31,6 +32,7 @@ const unknown = requested.filter((id) => !SPECIMENS.includes(id));
 if (unknown.length) throw new Error(`Unknown specimen: ${unknown.join(", ")}`);
 const ids = requested.length ? requested : SPECIMENS;
 
+await MeshoptSimplifier.ready;
 const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, "utf8")) : {};
 mkdirSync(draft ? draftDirectory : modelDirectory, { recursive: true });
 
