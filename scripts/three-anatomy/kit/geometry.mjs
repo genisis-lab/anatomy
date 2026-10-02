@@ -21,6 +21,8 @@ export function taperedTube(points, radius, { radial = 14, segments, caps = "bot
   const positions = [];
   const normals = [];
   const indices = [];
+  // Arc length per vertex, so painters can lay rings or stripes along a tube.
+  const along = [];
   const point = new THREE.Vector3();
   const normal = new THREE.Vector3();
   for (let i = 0; i <= steps; i += 1) {
@@ -34,6 +36,7 @@ export function taperedTube(points, radius, { radial = 14, segments, caps = "bot
       normal.set(cos * N.x + sin * B.x, cos * N.y + sin * B.y, cos * N.z + sin * B.z).normalize();
       positions.push(point.x + r * normal.x, point.y + r * normal.y, point.z + r * normal.z);
       normals.push(normal.x, normal.y, normal.z);
+      along.push(t * length);
     }
   }
   for (let i = 0; i < steps; i += 1) {
@@ -51,11 +54,13 @@ export function taperedTube(points, radius, { radial = 14, segments, caps = "bot
     const centerIndex = positions.length / 3;
     positions.push(center.x, center.y, center.z);
     normals.push(tangent.x, tangent.y, tangent.z);
+    along.push(t * length);
     const start = positions.length / 3;
     for (let j = 0; j < radial; j += 1) {
       const source = ring * radial + j;
       positions.push(positions[source * 3], positions[source * 3 + 1], positions[source * 3 + 2]);
       normals.push(tangent.x, tangent.y, tangent.z);
+      along.push(t * length);
     }
     for (let j = 0; j < radial; j += 1) {
       const a = start + j, b = start + ((j + 1) % radial);
@@ -69,6 +74,9 @@ export function taperedTube(points, radius, { radial = 14, segments, caps = "bot
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
   geometry.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
   geometry.setIndex(indices);
+  geometry.userData.along = Float32Array.from(along);
+  geometry.userData.cap = new Uint8Array(positions.length / 3);
+  for (let v = (steps + 1) * radial; v < positions.length / 3; v += 1) geometry.userData.cap[v] = 1;
   return geometry;
 }
 
@@ -85,7 +93,20 @@ export function merge(geometries) {
     return g;
   });
   if (!list.length) return null;
-  return mergeGeometries(list, false);
+  const merged = mergeGeometries(list, false);
+  // Carry per-vertex painting data (tube arc length, cap flags) through.
+  for (const key of ["along", "cap"]) {
+    if (!list.some((g) => g.userData[key])) continue;
+    const Type = key === "cap" ? Uint8Array : Float32Array;
+    const out = new Type(merged.attributes.position.count);
+    let offset = 0;
+    for (const g of list) {
+      if (g.userData[key]) out.set(g.userData[key], offset);
+      offset += g.attributes.position.count;
+    }
+    merged.userData[key] = out;
+  }
+  return merged;
 }
 
 /**
@@ -216,4 +237,11 @@ export function bakeTransform(geometry, { position = [0, 0, 0], rotation = [0, 0
   }
   out.userData = { ...geometry.userData };
   return out;
+}
+
+/** A smooth ellipsoid mesh, for small nodules that a meshing grid would blur. */
+export function ellipsoidGeometry(center, radii, { width = 20, height = 14, rotation = [0, 0, 0] } = {}) {
+  const geometry = new THREE.SphereGeometry(1, width, height);
+  geometry.deleteAttribute("uv");
+  return bakeTransform(geometry, { position: center, rotation, scale: radii });
 }

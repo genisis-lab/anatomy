@@ -6,7 +6,7 @@ import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
 import { dedup, meshopt, prune } from "@gltf-transform/functions";
 import { MeshoptDecoder, MeshoptEncoder, MeshoptSimplifier } from "meshoptimizer";
 import { meshField } from "./mesher.mjs";
-import { simplify } from "./geometry.mjs";
+import { bakeTransform, simplify } from "./geometry.mjs";
 import { bakeOcclusion, curvature } from "./paint.mjs";
 
 /** Edge length of the cube the viewer fits each model into (see loaders.ts). */
@@ -93,6 +93,16 @@ export class Specimen {
   }
 }
 
+/** Maps a point from a placed part's frame into the specimen. */
+export function placePoint(point, { position = [0, 0, 0], rotation = [0, 0, 0], scale = [1, 1, 1] } = {}) {
+  const matrix = new THREE.Matrix4().compose(
+    new THREE.Vector3(...position),
+    new THREE.Quaternion().setFromEuler(new THREE.Euler(...rotation)),
+    new THREE.Vector3(...(Array.isArray(scale) ? scale : [scale, scale, scale])),
+  );
+  return new THREE.Vector3(...point).applyMatrix4(matrix).toArray();
+}
+
 const DEFAULT_SHADE = { ao: 0.82, cavity: 0.6, ridge: 0.12, saturate: 0.9 };
 
 export async function bakeSpecimen(specimen, { log = console.log } = {}) {
@@ -113,7 +123,14 @@ export async function bakeSpecimen(specimen, { log = console.log } = {}) {
     if (!geometry.index) geometry.setIndex([...Array(geometry.attributes.position.count).keys()]);
     if (!geometry.attributes.normal) geometry.computeVertexNormals();
     if (geometry.attributes.position.count === 0) throw new Error(`${specimen.id}: ${part.name} produced no surface`);
-    built.push({ part, geometry });
+    // A placed part is authored (and painted) in its own frame, then moved
+    // into the specimen; occlusion and curvature use the placed geometry.
+    let local = null;
+    if (part.place) {
+      local = { position: geometry.attributes.position.array.slice(), normal: geometry.attributes.normal.array.slice() };
+      geometry = bakeTransform(geometry, part.place);
+    }
+    built.push({ part, geometry, local });
     log(`  ${part.name.padEnd(42)} ${String(geometry.index.count / 3).padStart(7)} tris  ${Date.now() - t0}ms`);
   }
 
@@ -130,14 +147,15 @@ export async function bakeSpecimen(specimen, { log = console.log } = {}) {
   const group = new THREE.Group();
   group.name = specimen.id;
   const materials = new Map();
-  const ctx = { x: 0, y: 0, z: 0, nx: 0, ny: 0, nz: 1, ao: 1, curv: 0, cap: 0, span };
-  for (const { part, geometry } of built) {
+  const ctx = { x: 0, y: 0, z: 0, nx: 0, ny: 0, nz: 1, ao: 1, curv: 0, cap: 0, along: 0, span };
+  for (const { part, geometry, local } of built) {
     const ao = part.occlude === false ? null : occlusion[occluderIndex++];
     const curv = curvature(geometry, part.curvatureScale ?? span * 0.012);
     const shade = { ...DEFAULT_SHADE, ...(part.shading ?? {}) };
-    const p = geometry.attributes.position.array;
-    const n = geometry.attributes.normal.array;
+    const p = local ? local.position : geometry.attributes.position.array;
+    const n = local ? local.normal : geometry.attributes.normal.array;
     const cap = geometry.userData.cap;
+    const along = geometry.userData.along;
     const colors = new Float32Array(p.length);
     for (let v = 0; v < p.length / 3; v += 1) {
       ctx.x = p[v * 3]; ctx.y = p[v * 3 + 1]; ctx.z = p[v * 3 + 2];
@@ -145,6 +163,7 @@ export async function bakeSpecimen(specimen, { log = console.log } = {}) {
       ctx.ao = ao ? ao[v] : 1;
       ctx.curv = curv[v];
       ctx.cap = cap ? cap[v] : 0;
+      ctx.along = along ? along[v] : 0;
       if (process.env.BAKE_DEBUG === "flat") { ctx.ao = 1; ctx.curv = 0; }
       const albedo = process.env.BAKE_DEBUG === "white" ? [0.8, 0.8, 0.8] : part.paint ? part.paint(ctx) : [0.8, 0.5, 0.45];
       const occluded = 1 - shade.ao * (1 - Math.pow(ctx.ao, 1.15));
@@ -188,9 +207,11 @@ export async function bakeSpecimen(specimen, { log = console.log } = {}) {
   const center = delivered.getCenter(new THREE.Vector3());
   const fit = FIT_SIZE / Math.max(...delivered.getSize(new THREE.Vector3()).toArray(), 1e-3);
   const anchors = {};
-  for (const [id, { meshName, at }] of Object.entries(specimen.anchors)) {
+  for (const [id, { meshName, at: authored }] of Object.entries(specimen.anchors)) {
     const mesh = group.children.find((child) => child.name === meshName);
     if (!mesh) throw new Error(`${specimen.id}: anchor ${id} names missing part ${meshName}`);
+    const owner = specimen.parts.find((part) => part.name === meshName);
+    const at = owner?.place ? placePoint(authored, owner.place) : authored;
     const p = mesh.geometry.attributes.position.array;
     let best = Infinity, bx = 0, by = 0, bz = 0;
     for (let v = 0; v < p.length; v += 3) {

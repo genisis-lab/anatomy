@@ -87,7 +87,7 @@ export function build() {
   const tortuous = [];
   for (let i = 0; i <= 10; i += 1) {
     const t = i / 10;
-    tortuous.push([-1.65 + t * (arteryEnd.x + 1.65), -0.12 + t * (arteryEnd.y + 0.12) + Math.sin(t * Math.PI * 3.2) * 0.09 * (1 - t * 0.6), 0.44 + t * 0.18 + Math.cos(t * Math.PI * 2.6) * 0.06]);
+    tortuous.push([-1.65 + t * (arteryEnd.x + 1.65), -0.12 + t * (arteryEnd.y + 0.12) + Math.sin(t * Math.PI * 3.2) * 0.055 * (1 - t * 0.6), 0.44 + t * 0.18 + Math.cos(t * Math.PI * 2.6) * 0.06]);
   }
   const arteries = [taperedTube(tortuous, 0.06, { radial: 16 })];
   const veins = [taperedTube([[-1.65, -0.52, 0.3], [-1.4, -0.46, 0.4], [-1.15, -0.36, 0.47], veinEnd], 0.085, { radial: 18 })];
