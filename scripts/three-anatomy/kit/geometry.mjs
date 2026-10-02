@@ -267,7 +267,7 @@ export function ellipsoidGeometry(center, radii, { width = 20, height = 14, rota
  * flagged in `userData.cap` and carry their distance to the cut outline in
  * `userData.rim`, so a painter can draw cortical bone around marrow.
  */
-export function clipMesh(geometry, normalArray, offset) {
+export function clipMesh(geometry, normalArray, offset, { spacing } = {}) {
   const n = new THREE.Vector3(...normalArray).normalize();
   const src = geometry.index ? geometry : geometry.clone().setIndex([...Array(geometry.attributes.position.count).keys()]);
   const P = src.attributes.position.array;
@@ -333,12 +333,50 @@ export function clipMesh(geometry, normalArray, offset) {
       return new THREE.Vector2(p.dot(u), p.dot(w));
     });
     contour.forEach((p, i) => rimSegments.push([p, contour[(i + 1) % contour.length]]));
+    // Interior Steiner points (single-point holes for the ear-clipper) give
+    // the flat section vertices to carry marrow, lamellae and other painting.
+    const bounds = new THREE.Box2().setFromPoints(contour);
+    const size = bounds.getSize(new THREE.Vector2());
+    const step = spacing ?? Math.max(size.x, size.y) / 36;
+    const inside = (q) => {
+      let hit = false;
+      for (let i = 0, j = contour.length - 1; i < contour.length; j = i++) {
+        const a = contour[i], b = contour[j];
+        if ((a.y > q.y) !== (b.y > q.y) && q.x < ((b.x - a.x) * (q.y - a.y)) / (b.y - a.y) + a.x) hit = !hit;
+      }
+      return hit;
+    };
+    const edgeDistance = (q) => {
+      let best = Infinity;
+      for (let i = 0; i < contour.length; i += 1) {
+        const a = contour[i], b = contour[(i + 1) % contour.length];
+        const ab = b.clone().sub(a);
+        const h = THREE.MathUtils.clamp(q.clone().sub(a).dot(ab) / Math.max(ab.lengthSq(), 1e-12), 0, 1);
+        best = Math.min(best, a.clone().addScaledVector(ab, h).distanceTo(q));
+      }
+      return best;
+    };
+    const steiner = [];
+    if (step > 0) {
+      for (let gx = bounds.min.x + step * 0.5; gx < bounds.max.x; gx += step) {
+        for (let gy = bounds.min.y + step * 0.5; gy < bounds.max.y; gy += step) {
+          const q = new THREE.Vector2(gx + (Math.sin(gy * 91.7) * 0.15) * step, gy);
+          if (inside(q) && edgeDistance(q) > step * 0.45) steiner.push(q);
+        }
+      }
+    }
     const base = positions.length / 3;
+    const toWorld = (q) => u.clone().multiplyScalar(q.x).addScaledVector(w, q.y).addScaledVector(n, offset);
     loop.forEach((v) => {
       positions.push(positions[v * 3], positions[v * 3 + 1], positions[v * 3 + 2]);
       normals.push(n.x, n.y, n.z);
     });
-    const faces = THREE.ShapeUtils.triangulateShape(contour, []);
+    steiner.forEach((q) => {
+      const p = toWorld(q);
+      positions.push(p.x, p.y, p.z);
+      normals.push(n.x, n.y, n.z);
+    });
+    const faces = delaunayFlip([...contour, ...steiner], THREE.ShapeUtils.triangulateShape(contour, steiner.map((q) => [q])));
     const clockwise = THREE.ShapeUtils.isClockWise(contour);
     for (const [a, b, c] of faces) triangles.push(...(clockwise ? [base + a, base + b, base + c] : [base + a, base + c, base + b]));
   }
@@ -369,4 +407,66 @@ export function clipMesh(geometry, normalArray, offset) {
     if (ArrayBuffer.isView(out.userData[key]) && out.userData[key].length !== total) delete out.userData[key];
   }
   return compact(out);
+}
+
+/**
+ * Lawson edge flips: turns an ear-clipped polygon triangulation into the
+ * constrained Delaunay one, so painted sections interpolate across
+ * well-shaped triangles rather than slivers. Boundary edges never flip.
+ */
+function delaunayFlip(points, faces) {
+  const tris = faces.map((f) => [...f]);
+  const key = (a, b) => (a < b ? a * 1048576 + b : b * 1048576 + a);
+  const edges = new Map();
+  const link = (t) => {
+    for (let e = 0; e < 3; e += 1) {
+      const k = key(tris[t][e], tris[t][(e + 1) % 3]);
+      const list = edges.get(k);
+      if (list) { if (!list.includes(t)) list.push(t); } else edges.set(k, [t]);
+    }
+  };
+  const unlink = (t) => {
+    for (let e = 0; e < 3; e += 1) {
+      const k = key(tris[t][e], tris[t][(e + 1) % 3]);
+      const list = edges.get(k);
+      if (!list) continue;
+      const i = list.indexOf(t);
+      if (i >= 0) list.splice(i, 1);
+      if (!list.length) edges.delete(k);
+    }
+  };
+  tris.forEach((_, t) => link(t));
+  const inCircle = (a, b, c, d) => {
+    const ax = a.x - d.x, ay = a.y - d.y, bx = b.x - d.x, by = b.y - d.y, cx = c.x - d.x, cy = c.y - d.y;
+    const det = (ax * ax + ay * ay) * (bx * cy - cx * by) - (bx * bx + by * by) * (ax * cy - cx * ay) + (cx * cx + cy * cy) * (ax * by - bx * ay);
+    const orient = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+    return orient > 0 ? det > 1e-14 : det < -1e-14;
+  };
+  const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+  let changed = true;
+  for (let pass = 0; changed && pass < 60; pass += 1) {
+    changed = false;
+    for (const [k, list] of [...edges]) {
+      if (!list || list.length !== 2) continue;
+      const [t0, t1] = list;
+      const a = Math.floor(k / 1048576), b = k % 1048576;
+      const c = tris[t0].find((v) => v !== a && v !== b);
+      const d = tris[t1].find((v) => v !== a && v !== b);
+      if (c === undefined || d === undefined) continue;
+      if (!inCircle(points[a], points[b], points[c], points[d])) continue;
+      // Only flip inside a convex quad, so the new edge stays in the polygon.
+      const s1 = cross(points[c], points[d], points[a]), s2 = cross(points[c], points[d], points[b]);
+      if (s1 * s2 >= 0) continue;
+      // Keep each triangle's winding consistent with the one it replaces.
+      const orientation = Math.sign(cross(points[tris[t0][0]], points[tris[t0][1]], points[tris[t0][2]]));
+      unlink(t0); unlink(t1);
+      tris[t0] = [c, d, a];
+      tris[t1] = [d, c, b];
+      if (Math.sign(cross(points[c], points[d], points[a])) !== orientation) tris[t0] = [d, c, a];
+      if (Math.sign(cross(points[d], points[c], points[b])) !== orientation) tris[t1] = [c, d, b];
+      link(t0); link(t1);
+      changed = true;
+    }
+  }
+  return tris;
 }
