@@ -23,6 +23,7 @@ export const SPECIMENS = [
   "stomach", "skeleton", "muscles", "ear", "spinal-cord", "bladder", "thyroid", "lymphatic",
   "female-reproductive", "male-reproductive", "gallbladder", "airway-diaphragm", "spleen", "esophagus", "knee",
   "tooth", "tongue", "larynx", "adrenal-glands", "lumbar-spine", "hand",
+  "foot", "shoulder",
 ];
 
 const args = process.argv.slice(2);
