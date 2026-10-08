@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { Specimen } from "../kit/bake.mjs";
-import { capsule, curveTube, displace, ellipsoid, intersect, plane, project, smoothSubtract, smoothUnion, sphere, subtract, torus, transform, union } from "../kit/sdf.mjs";
+import { capsule, curveTube, displace, ellipsoid, intersect, plane, project, smoothSubtract, smoothUnion, sphere, torus, transform, union } from "../kit/sdf.mjs";
 import { fbm3, mulberry32, simplex3, worley3 } from "../kit/noise.mjs";
 import { color, mix, smoothstep, tissue } from "../kit/paint.mjs";
 import { merge, taperedTube } from "../kit/geometry.mjs";

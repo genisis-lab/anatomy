@@ -36,7 +36,6 @@ export function build() {
   // the pulp. Everything in front of the plane is removed.
   const cut = { normal: new THREE.Vector3(0.18, -0.5, 0.85).normalize(), offset: 0.3 };
   const wedge = plane(cut.normal.clone().negate(), -cut.offset);
-  const cutA = cut;
   const spleen = subtract(spleenBody, wedge);
 
   const s = new Specimen("spleen", { cell: 0.011 });

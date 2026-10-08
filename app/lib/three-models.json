@@ -1,0 +1,1802 @@
+{
+  "stomach": {
+    "model": "/models/stomach.81da3e3b.glb",
+    "bytes": 2193768,
+    "meshes": 4,
+    "triangles": 298404,
+    "anchors": {
+      "cardia": {
+        "meshName": "Stomach wall",
+        "position": [
+          0.1317,
+          0.9094,
+          0.2729
+        ]
+      },
+      "fundus": {
+        "meshName": "Stomach wall",
+        "position": [
+          0.7482,
+          1.3589,
+          0.169
+        ]
+      },
+      "body": {
+        "meshName": "Stomach wall",
+        "position": [
+          1.0307,
+          -0.0667,
+          0.3418
+        ]
+      },
+      "rugae": {
+        "meshName": "Stomach wall",
+        "position": [
+          0.5299,
+          -0.2727,
+          -0.215
+        ]
+      },
+      "antrum": {
+        "meshName": "Stomach wall",
+        "position": [
+          -0.1508,
+          -1.2354,
+          0.2187
+        ]
+      },
+      "pylorus": {
+        "meshName": "Stomach wall",
+        "position": [
+          -0.7544,
+          -1.0684,
+          0.2167
+        ]
+      },
+      "gastroepiploic": {
+        "meshName": "Gastric arteries",
+        "position": [
+          0.871,
+          -1.1312,
+          0.1585
+        ]
+      }
+    }
+  },
+  "skeleton": {
+    "model": "/models/skeleton.dc3a4436.glb",
+    "bytes": 2358244,
+    "meshes": 19,
+    "triangles": 296942,
+    "anchors": {
+      "skull": {
+        "meshName": "Skull",
+        "position": [
+          -0.0013,
+          1.7793,
+          0.1581
+        ]
+      },
+      "spine": {
+        "meshName": "Vertebral column",
+        "position": [
+          0.0009,
+          0.3672,
+          -0.1539
+        ]
+      },
+      "ribcage": {
+        "meshName": "Ribs",
+        "position": [
+          0.2313,
+          0.8297,
+          0.1708
+        ]
+      },
+      "sternum": {
+        "meshName": "Sternum",
+        "position": [
+          0.013,
+          0.8725,
+          0.2235
+        ]
+      },
+      "clavicle": {
+        "meshName": "Clavicles",
+        "position": [
+          0.1424,
+          1.2208,
+          0.0554
+        ]
+      },
+      "humerus": {
+        "meshName": "Humeri",
+        "position": [
+          0.4641,
+          0.8038,
+          -0.0844
+        ]
+      },
+      "pelvis": {
+        "meshName": "Pelvis",
+        "position": [
+          0.2219,
+          0.0845,
+          0.0366
+        ]
+      },
+      "hand": {
+        "meshName": "Hand bones",
+        "position": [
+          0.6169,
+          -0.1904,
+          0.0425
+        ]
+      },
+      "femur": {
+        "meshName": "Femora",
+        "position": [
+          0.2035,
+          -0.4561,
+          -0.0051
+        ]
+      },
+      "patella": {
+        "meshName": "Patellae",
+        "position": [
+          0.1965,
+          -0.9139,
+          0.0146
+        ]
+      },
+      "foot": {
+        "meshName": "Foot bones",
+        "position": [
+          0.2128,
+          -1.8692,
+          0.176
+        ]
+      }
+    }
+  },
+  "muscles": {
+    "model": "/models/muscles.a2bfb31d.glb",
+    "bytes": 3650820,
+    "meshes": 17,
+    "triangles": 486820,
+    "anchors": {
+      "deltoid": {
+        "meshName": "Deltoid",
+        "position": [
+          0.4311,
+          1.0673,
+          0.0209
+        ]
+      },
+      "pectoralis": {
+        "meshName": "Pectoralis major",
+        "position": [
+          0.2066,
+          0.8919,
+          0.264
+        ]
+      },
+      "biceps": {
+        "meshName": "Arm muscles",
+        "position": [
+          0.4848,
+          0.754,
+          -0.0038
+        ]
+      },
+      "rectus": {
+        "meshName": "Abdominal wall",
+        "position": [
+          0.0784,
+          0.3117,
+          0.2291
+        ]
+      },
+      "sternocleidomastoid": {
+        "meshName": "Muscles of the head and neck",
+        "position": [
+          0.05,
+          1.2994,
+          0.0785
+        ]
+      },
+      "quadriceps": {
+        "meshName": "Quadriceps femoris",
+        "position": [
+          0.2355,
+          -0.4383,
+          0.1245
+        ]
+      },
+      "sartorius": {
+        "meshName": "Medial and anterior thigh",
+        "position": [
+          0.1474,
+          -0.3275,
+          0.089
+        ]
+      },
+      "tibialis": {
+        "meshName": "Anterior and lateral leg",
+        "position": [
+          0.2006,
+          -1.3361,
+          -0.0138
+        ]
+      },
+      "gastrocnemius": {
+        "meshName": "Calf muscles",
+        "position": [
+          -0.1867,
+          -1.1573,
+          -0.113
+        ]
+      },
+      "gluteus": {
+        "meshName": "Gluteal muscles",
+        "position": [
+          -0.1892,
+          -0.0436,
+          -0.233
+        ]
+      },
+      "trapezius": {
+        "meshName": "Trapezius",
+        "position": [
+          -0.1444,
+          1.121,
+          -0.2495
+        ]
+      }
+    }
+  },
+  "ear": {
+    "model": "/models/ear.8c2b5702.glb",
+    "bytes": 2365964,
+    "meshes": 11,
+    "triangles": 349448,
+    "anchors": {
+      "auricle": {
+        "meshName": "Auricle",
+        "position": [
+          -1.4204,
+          0.843,
+          0.3518
+        ]
+      },
+      "ear-canal": {
+        "meshName": "Ear canal",
+        "position": [
+          -0.7783,
+          -0.0468,
+          0.0681
+        ]
+      },
+      "tympanic-membrane": {
+        "meshName": "Tympanic membrane",
+        "position": [
+          -0.1446,
+          -0.0215,
+          0.1113
+        ]
+      },
+      "malleus": {
+        "meshName": "Malleus",
+        "position": [
+          -0.0844,
+          0.4566,
+          0.1135
+        ]
+      },
+      "incus": {
+        "meshName": "Incus",
+        "position": [
+          0.0654,
+          0.4566,
+          0.0656
+        ]
+      },
+      "stapes": {
+        "meshName": "Stapes",
+        "position": [
+          0.2336,
+          0.1533,
+          0.0262
+        ]
+      },
+      "vestibule": {
+        "meshName": "Vestibule and semicircular canals",
+        "position": [
+          0.577,
+          0.1068,
+          0.1189
+        ]
+      },
+      "semicircular-canals": {
+        "meshName": "Vestibule and semicircular canals",
+        "position": [
+          0.6761,
+          0.827,
+          0.0904
+        ]
+      },
+      "cochlea": {
+        "meshName": "Cochlea",
+        "position": [
+          0.9495,
+          -0.1996,
+          0.1905
+        ]
+      },
+      "auditory-tube": {
+        "meshName": "Auditory tube",
+        "position": [
+          0.9281,
+          -0.961,
+          0.0681
+        ]
+      },
+      "vestibulocochlear-nerve": {
+        "meshName": "Cranial nerves VII and VIII",
+        "position": [
+          1.4676,
+          0.0176,
+          0.047
+        ]
+      }
+    }
+  },
+  "spinal-cord": {
+    "model": "/models/spinal-cord.785378d1.glb",
+    "bytes": 2674624,
+    "meshes": 11,
+    "triangles": 383306,
+    "anchors": {
+      "cervical": {
+        "meshName": "Spinal cord",
+        "position": [
+          -1.0142,
+          1.542,
+          0.0941
+        ]
+      },
+      "thoracic": {
+        "meshName": "Spinal cord",
+        "position": [
+          -1.0365,
+          0.6525,
+          0.0925
+        ]
+      },
+      "lumbar": {
+        "meshName": "Spinal cord",
+        "position": [
+          -1.04,
+          -0.3774,
+          0.0768
+        ]
+      },
+      "cauda": {
+        "meshName": "Spinal nerve roots",
+        "position": [
+          -1.0718,
+          -1.2385,
+          0.0552
+        ]
+      },
+      "grey-matter": {
+        "meshName": "Grey matter",
+        "position": [
+          0.4472,
+          1.0219,
+          0.5412
+        ]
+      },
+      "white-matter": {
+        "meshName": "White matter",
+        "position": [
+          0.2091,
+          1.145,
+          0.3483
+        ]
+      },
+      "dorsal-root": {
+        "meshName": "Dorsal and ventral roots",
+        "position": [
+          0.7429,
+          0.8018,
+          0.2154
+        ]
+      },
+      "ventral-root": {
+        "meshName": "Dorsal and ventral roots",
+        "position": [
+          0.0054,
+          0.2866,
+          -0.1362
+        ]
+      },
+      "ganglion": {
+        "meshName": "Dorsal root ganglia",
+        "position": [
+          1.0102,
+          0.6313,
+          0.3502
+        ]
+      },
+      "dura": {
+        "meshName": "Dura mater",
+        "position": [
+          -0.0332,
+          0.5226,
+          0.089
+        ]
+      },
+      "spinal-artery": {
+        "meshName": "Spinal arteries",
+        "position": [
+          0.3105,
+          0.4271,
+          0.2356
+        ]
+      }
+    }
+  },
+  "bladder": {
+    "model": "/models/bladder.85aec798.glb",
+    "bytes": 2341552,
+    "meshes": 6,
+    "triangles": 315714,
+    "anchors": {
+      "detrusor": {
+        "meshName": "Detrusor wall",
+        "position": [
+          0.7682,
+          0.4014,
+          0.6842
+        ]
+      },
+      "urothelium": {
+        "meshName": "Detrusor wall",
+        "position": [
+          -0.3168,
+          0.2301,
+          -0.5319
+        ]
+      },
+      "trigone": {
+        "meshName": "Detrusor wall",
+        "position": [
+          -0.0343,
+          -0.7979,
+          -0.5426
+        ]
+      },
+      "ureteric-orifice": {
+        "meshName": "Detrusor wall",
+        "position": [
+          0.4113,
+          -0.5695,
+          -0.5218
+        ]
+      },
+      "ureters": {
+        "meshName": "Ureters",
+        "position": [
+          1.0324,
+          1.2377,
+          -0.6873
+        ]
+      },
+      "urethra": {
+        "meshName": "Urethra",
+        "position": [
+          0,
+          -1.5683,
+          0.3218
+        ]
+      },
+      "apex": {
+        "meshName": "Median umbilical ligament",
+        "position": [
+          0.0022,
+          1.2388,
+          0.6169
+        ]
+      }
+    }
+  },
+  "thyroid": {
+    "model": "/models/thyroid.c0c79031.glb",
+    "bytes": 1618836,
+    "meshes": 10,
+    "triangles": 241704,
+    "anchors": {
+      "right-lobe": {
+        "meshName": "Thyroid gland",
+        "position": [
+          -0.6586,
+          -0.085,
+          0.5148
+        ]
+      },
+      "left-lobe": {
+        "meshName": "Thyroid gland",
+        "position": [
+          0.7075,
+          0.1389,
+          0.3037
+        ]
+      },
+      "follicles": {
+        "meshName": "Thyroid gland",
+        "position": [
+          0.5731,
+          -0.1634,
+          0.3037
+        ]
+      },
+      "isthmus": {
+        "meshName": "Thyroid gland",
+        "position": [
+          0.002,
+          -0.2978,
+          0.5866
+        ]
+      },
+      "pyramidal-lobe": {
+        "meshName": "Thyroid gland",
+        "position": [
+          -0.1099,
+          0.2397,
+          0.5393
+        ]
+      },
+      "parathyroid": {
+        "meshName": "Parathyroid glands",
+        "position": [
+          -0.512,
+          0.3609,
+          -0.0322
+        ]
+      },
+      "superior-thyroid-artery": {
+        "meshName": "Thyroid arteries",
+        "position": [
+          -0.5479,
+          1.0822,
+          0.331
+        ]
+      },
+      "trachea": {
+        "meshName": "Trachea",
+        "position": [
+          0.0071,
+          -1.2744,
+          0.4208
+        ]
+      },
+      "thyroid-cartilage": {
+        "meshName": "Thyroid cartilage",
+        "position": [
+          -0.0041,
+          1.2088,
+          0.5011
+        ]
+      }
+    }
+  },
+  "lymphatic": {
+    "model": "/models/lymphatic.76b54a88.glb",
+    "bytes": 1669756,
+    "meshes": 13,
+    "triangles": 213370,
+    "anchors": {
+      "cervical": {
+        "meshName": "Cervical nodes",
+        "position": [
+          -0.1779,
+          1.033,
+          0.1122
+        ]
+      },
+      "axillary": {
+        "meshName": "Axillary nodes",
+        "position": [
+          0.5045,
+          0.4463,
+          0.0096
+        ]
+      },
+      "mediastinal": {
+        "meshName": "Mediastinal nodes",
+        "position": [
+          -0.0021,
+          0.3809,
+          0.1068
+        ]
+      },
+      "thoracic-duct": {
+        "meshName": "Thoracic duct and cisterna chyli",
+        "position": [
+          -0.0248,
+          0.022,
+          0.126
+        ]
+      },
+      "cisterna-chyli": {
+        "meshName": "Thoracic duct and cisterna chyli",
+        "position": [
+          -0.0294,
+          -0.5855,
+          0.185
+        ]
+      },
+      "mesenteric": {
+        "meshName": "Mesenteric nodes",
+        "position": [
+          -0.0105,
+          -0.7082,
+          0.2618
+        ]
+      },
+      "inguinal": {
+        "meshName": "Inguinal nodes",
+        "position": [
+          -0.3604,
+          -1.5145,
+          0.2321
+        ]
+      },
+      "spleen": {
+        "meshName": "Spleen",
+        "position": [
+          0.3872,
+          -0.2864,
+          -0.0359
+        ]
+      },
+      "thymus": {
+        "meshName": "Thymus",
+        "position": [
+          -0.0049,
+          0.5088,
+          0.3161
+        ]
+      },
+      "tonsils": {
+        "meshName": "Palatine tonsils",
+        "position": [
+          -0.0715,
+          1.244,
+          0.1742
+        ]
+      },
+      "venous-angle": {
+        "meshName": "Great veins",
+        "position": [
+          0.1449,
+          0.7793,
+          0.1503
+        ]
+      }
+    }
+  },
+  "female-reproductive": {
+    "model": "/models/female-reproductive.35d5b7ac.glb",
+    "bytes": 1237376,
+    "meshes": 8,
+    "triangles": 181278,
+    "anchors": {
+      "uterus": {
+        "meshName": "Myometrium",
+        "position": [
+          0.2565,
+          0.9199,
+          0.1711
+        ]
+      },
+      "myometrium": {
+        "meshName": "Myometrium",
+        "position": [
+          -0.3819,
+          0.5081,
+          -0.0625
+        ]
+      },
+      "endometrium": {
+        "meshName": "Endometrium",
+        "position": [
+          -0.1755,
+          0.7023,
+          -0.0906
+        ]
+      },
+      "cervix": {
+        "meshName": "Myometrium",
+        "position": [
+          -0.1142,
+          -0.3465,
+          -0.063
+        ]
+      },
+      "vagina": {
+        "meshName": "Vagina",
+        "position": [
+          0.195,
+          -0.8884,
+          0.179
+        ]
+      },
+      "tubes": {
+        "meshName": "Uterine tubes",
+        "position": [
+          0.9483,
+          1.0795,
+          0.0169
+        ]
+      },
+      "fimbriae": {
+        "meshName": "Uterine tubes",
+        "position": [
+          1.4779,
+          0.3288,
+          0.0664
+        ]
+      },
+      "ovaries": {
+        "meshName": "Ovaries",
+        "position": [
+          1.1166,
+          0.4388,
+          0.0563
+        ]
+      },
+      "follicles": {
+        "meshName": "Ovaries",
+        "position": [
+          -1.1252,
+          0.3185,
+          -0.0625
+        ]
+      },
+      "uterine-artery": {
+        "meshName": "Uterine and ovarian arteries",
+        "position": [
+          0.4852,
+          0.1363,
+          0.0851
+        ]
+      },
+      "round-ligament": {
+        "meshName": "Supporting ligaments",
+        "position": [
+          0.8047,
+          0.6258,
+          0.2948
+        ]
+      }
+    }
+  },
+  "male-reproductive": {
+    "model": "/models/male-reproductive.6bfa088b.glb",
+    "bytes": 1321684,
+    "meshes": 10,
+    "triangles": 180483,
+    "anchors": {
+      "prostate": {
+        "meshName": "Prostate",
+        "position": [
+          0.2706,
+          0.6275,
+          0.1128
+        ]
+      },
+      "urethra": {
+        "meshName": "Urethra",
+        "position": [
+          -0.0036,
+          0.2366,
+          0.2562
+        ]
+      },
+      "vesicles": {
+        "meshName": "Seminal vesicles",
+        "position": [
+          0.7425,
+          1.3668,
+          -0.2016
+        ]
+      },
+      "ductus": {
+        "meshName": "Ductus deferens",
+        "position": [
+          1.0525,
+          0.6099,
+          0.2773
+        ]
+      },
+      "testes": {
+        "meshName": "Testes",
+        "position": [
+          0.5893,
+          -1.2448,
+          0.3737
+        ]
+      },
+      "seminiferous-tubules": {
+        "meshName": "Testes",
+        "position": [
+          -0.6168,
+          -1.4772,
+          0.1128
+        ]
+      },
+      "epididymis": {
+        "meshName": "Epididymides",
+        "position": [
+          0.8613,
+          -1.2399,
+          0.0276
+        ]
+      },
+      "spermatic-cord": {
+        "meshName": "Pampiniform plexus",
+        "position": [
+          0.8101,
+          -0.2359,
+          0.2432
+        ]
+      },
+      "bulbourethral": {
+        "meshName": "Bulbourethral glands",
+        "position": [
+          0.1599,
+          0.1665,
+          0.1189
+        ]
+      }
+    }
+  },
+  "gallbladder": {
+    "model": "/models/gallbladder.4bb1d280.glb",
+    "bytes": 2614904,
+    "meshes": 9,
+    "triangles": 350960,
+    "anchors": {
+      "fundus": {
+        "meshName": "Gallbladder",
+        "position": [
+          0.8862,
+          -1.3078,
+          0.1608
+        ]
+      },
+      "body": {
+        "meshName": "Gallbladder",
+        "position": [
+          0.1814,
+          0.0171,
+          0.3747
+        ]
+      },
+      "mucosa": {
+        "meshName": "Gallbladder",
+        "position": [
+          0.6371,
+          -0.2433,
+          -0.3117
+        ]
+      },
+      "neck": {
+        "meshName": "Gallbladder",
+        "position": [
+          0.2634,
+          0.7532,
+          0.2356
+        ]
+      },
+      "cystic-duct": {
+        "meshName": "Cystic duct",
+        "position": [
+          -0.1065,
+          1.12,
+          0.0873
+        ]
+      },
+      "common-hepatic-duct": {
+        "meshName": "Hepatic ducts",
+        "position": [
+          -0.3316,
+          1.2925,
+          0.0869
+        ]
+      },
+      "common-bile-duct": {
+        "meshName": "Common bile duct",
+        "position": [
+          -0.3486,
+          0.3013,
+          0.0567
+        ]
+      },
+      "papilla": {
+        "meshName": "Duodenum",
+        "position": [
+          -0.7736,
+          -0.9893,
+          0.0708
+        ]
+      },
+      "cystic-artery": {
+        "meshName": "Cystic and hepatic arteries",
+        "position": [
+          0.1598,
+          1.1846,
+          0.205
+        ]
+      }
+    }
+  },
+  "airway-diaphragm": {
+    "model": "/models/airway-diaphragm.da175abd.glb",
+    "bytes": 2274668,
+    "meshes": 9,
+    "triangles": 322288,
+    "anchors": {
+      "larynx": {
+        "meshName": "Larynx",
+        "position": [
+          -0.0044,
+          1.4343,
+          0.3758
+        ]
+      },
+      "trachea": {
+        "meshName": "Trachea",
+        "position": [
+          -0.0107,
+          0.5315,
+          0.3277
+        ]
+      },
+      "carina": {
+        "meshName": "Bronchial tree",
+        "position": [
+          -0.0089,
+          -0.0763,
+          0.2649
+        ]
+      },
+      "main-bronchi": {
+        "meshName": "Bronchial tree",
+        "position": [
+          0.3277,
+          -0.2548,
+          0.2272
+        ]
+      },
+      "lobar-bronchi": {
+        "meshName": "Bronchial tree",
+        "position": [
+          -0.6249,
+          -0.7056,
+          0.3417
+        ]
+      },
+      "esophagus": {
+        "meshName": "Oesophagus",
+        "position": [
+          0.113,
+          0.3612,
+          -0.1956
+        ]
+      },
+      "diaphragm": {
+        "meshName": "Diaphragm",
+        "position": [
+          0.7705,
+          -1.1647,
+          0.4832
+        ]
+      },
+      "central-tendon": {
+        "meshName": "Diaphragm",
+        "position": [
+          -0.1546,
+          -0.8868,
+          0.1605
+        ]
+      },
+      "hiatus": {
+        "meshName": "Diaphragm",
+        "position": [
+          0.308,
+          -0.987,
+          0.1282
+        ]
+      },
+      "phrenic-nerve": {
+        "meshName": "Phrenic nerves",
+        "position": [
+          0.4329,
+          0.1794,
+          0.1308
+        ]
+      },
+      "pulmonary-artery": {
+        "meshName": "Pulmonary arteries",
+        "position": [
+          0.0708,
+          -0.5417,
+          0.5811
+        ]
+      }
+    }
+  },
+  "spleen": {
+    "model": "/models/spleen.15c1fd75.glb",
+    "bytes": 873268,
+    "meshes": 5,
+    "triangles": 131864,
+    "anchors": {
+      "capsule": {
+        "meshName": "Spleen",
+        "position": [
+          1.5689,
+          0.7709,
+          0.4122
+        ]
+      },
+      "hilum": {
+        "meshName": "Spleen",
+        "position": [
+          0.3781,
+          0.1462,
+          0.3895
+        ]
+      },
+      "notches": {
+        "meshName": "Spleen",
+        "position": [
+          1.8118,
+          0.4501,
+          0.1531
+        ]
+      },
+      "red-pulp": {
+        "meshName": "Spleen",
+        "position": [
+          0.2014,
+          -1.2214,
+          -0.1384
+        ]
+      },
+      "white-pulp": {
+        "meshName": "White pulp",
+        "position": [
+          0.5265,
+          -1.1254,
+          -0.09
+        ]
+      },
+      "splenic-artery": {
+        "meshName": "Splenic artery",
+        "position": [
+          -1.4193,
+          -0.1716,
+          0.6425
+        ]
+      },
+      "splenic-vein": {
+        "meshName": "Splenic vein",
+        "position": [
+          -1.4667,
+          -0.8052,
+          0.6283
+        ]
+      },
+      "pancreas-tail": {
+        "meshName": "Tail of pancreas",
+        "position": [
+          -1.1262,
+          -1.1164,
+          0.3338
+        ]
+      }
+    }
+  },
+  "esophagus": {
+    "model": "/models/esophagus.8ac1ee82.glb",
+    "bytes": 2135160,
+    "meshes": 10,
+    "triangles": 308676,
+    "anchors": {
+      "longitudinal-muscle": {
+        "meshName": "Longitudinal muscular layer",
+        "position": [
+          -0.434,
+          0.2773,
+          0.2018
+        ]
+      },
+      "circular-muscle": {
+        "meshName": "Circular muscular layer",
+        "position": [
+          -0.2802,
+          0.1005,
+          0.2181
+        ]
+      },
+      "submucosa": {
+        "meshName": "Submucosa",
+        "position": [
+          -0.2802,
+          -0.0864,
+          0.1756
+        ]
+      },
+      "mucosa": {
+        "meshName": "Mucosa",
+        "position": [
+          -0.2802,
+          -0.2734,
+          0.1561
+        ]
+      },
+      "upper-sphincter": {
+        "meshName": "Longitudinal muscular layer",
+        "position": [
+          -0.3155,
+          1.602,
+          0.2047
+        ]
+      },
+      "lower-sphincter": {
+        "meshName": "Longitudinal muscular layer",
+        "position": [
+          -0.0894,
+          -1.1288,
+          0.3419
+        ]
+      },
+      "hiatus": {
+        "meshName": "Diaphragm",
+        "position": [
+          -0.1812,
+          -1.3038,
+          0.4369
+        ]
+      },
+      "aortic-arch": {
+        "meshName": "Aorta",
+        "position": [
+          -0.0311,
+          1.0279,
+          0.0671
+        ]
+      },
+      "vagal-plexus": {
+        "meshName": "Vagal plexus",
+        "position": [
+          -0.4039,
+          -0.7113,
+          0.0955
+        ]
+      }
+    }
+  },
+  "knee": {
+    "model": "/models/knee.e4bddf1c.glb",
+    "bytes": 763292,
+    "meshes": 12,
+    "triangles": 108270,
+    "anchors": {
+      "femur": {
+        "meshName": "Right femur",
+        "position": [
+          0.2169,
+          0.9759,
+          0.3105
+        ]
+      },
+      "cartilage": {
+        "meshName": "Right femur",
+        "position": [
+          0.3321,
+          0.0523,
+          0.1405
+        ]
+      },
+      "tibia": {
+        "meshName": "Right tibia",
+        "position": [
+          0.1612,
+          -0.8966,
+          0.1907
+        ]
+      },
+      "fibula": {
+        "meshName": "Right fibula",
+        "position": [
+          -0.6837,
+          -0.5548,
+          -0.1474
+        ]
+      },
+      "patella": {
+        "meshName": "Right patella",
+        "position": [
+          -0.0715,
+          0.246,
+          0.6427
+        ]
+      },
+      "patellar-ligament": {
+        "meshName": "Patellar ligament",
+        "position": [
+          -0.1266,
+          -0.4951,
+          0.5596
+        ]
+      },
+      "menisci": {
+        "meshName": "Medial meniscus",
+        "position": [
+          0.3876,
+          -0.1018,
+          0.0882
+        ]
+      },
+      "acl": {
+        "meshName": "Anterior cruciate ligament",
+        "position": [
+          -0.1652,
+          0.1361,
+          -0.0005
+        ]
+      },
+      "pcl": {
+        "meshName": "Posterior cruciate ligament",
+        "position": [
+          -0.005,
+          0.0608,
+          -0.2383
+        ]
+      },
+      "mcl": {
+        "meshName": "Medial collateral ligament",
+        "position": [
+          0.8136,
+          0.1744,
+          -0.08
+        ]
+      },
+      "lcl": {
+        "meshName": "Lateral collateral ligament",
+        "position": [
+          -0.7392,
+          0.208,
+          -0.201
+        ]
+      }
+    }
+  },
+  "tooth": {
+    "model": "/models/tooth.98aa9a2f.glb",
+    "bytes": 2481912,
+    "meshes": 10,
+    "triangles": 379234,
+    "anchors": {
+      "enamel": {
+        "meshName": "Enamel",
+        "position": [
+          -0.4548,
+          1.6065,
+          0.5139
+        ]
+      },
+      "crown": {
+        "meshName": "Enamel",
+        "position": [
+          -0.0054,
+          1.7543,
+          0.2717
+        ]
+      },
+      "dentin": {
+        "meshName": "Dentin",
+        "position": [
+          0.2667,
+          0.6928,
+          0.5139
+        ]
+      },
+      "pulp": {
+        "meshName": "Pulp",
+        "position": [
+          -0.0033,
+          1.1172,
+          0.5139
+        ]
+      },
+      "root-canal": {
+        "meshName": "Pulp",
+        "position": [
+          0.4212,
+          -0.0562,
+          0.5139
+        ]
+      },
+      "cementum": {
+        "meshName": "Cementum",
+        "position": [
+          -0.5799,
+          -0.0529,
+          0.5019
+        ]
+      },
+      "periodontal-ligament": {
+        "meshName": "Periodontal ligament",
+        "position": [
+          0.6234,
+          -0.3089,
+          0.5076
+        ]
+      },
+      "alveolar-bone": {
+        "meshName": "Alveolar bone",
+        "position": [
+          1.088,
+          -0.2342,
+          0.5139
+        ]
+      },
+      "gingiva": {
+        "meshName": "Gingiva",
+        "position": [
+          -0.8235,
+          0.9129,
+          0.5055
+        ]
+      },
+      "nerve": {
+        "meshName": "Inferior alveolar nerve",
+        "position": [
+          -1.1783,
+          -1.2907,
+          0.5388
+        ]
+      }
+    }
+  },
+  "tongue": {
+    "model": "/models/tongue.e102c845.glb",
+    "bytes": 1730500,
+    "meshes": 7,
+    "triangles": 233470,
+    "anchors": {
+      "apex": {
+        "meshName": "Tongue",
+        "position": [
+          0.0023,
+          -1.6513,
+          0.4761
+        ]
+      },
+      "median-sulcus": {
+        "meshName": "Tongue",
+        "position": [
+          -0.0092,
+          -0.7977,
+          0.589
+        ]
+      },
+      "fungiform": {
+        "meshName": "Tongue",
+        "position": [
+          -0.3784,
+          -0.8093,
+          0.5953
+        ]
+      },
+      "filiform": {
+        "meshName": "Tongue",
+        "position": [
+          0.2907,
+          -0.3479,
+          0.6285
+        ]
+      },
+      "circumvallate": {
+        "meshName": "Tongue",
+        "position": [
+          -0.2869,
+          0.1943,
+          0.6609
+        ]
+      },
+      "terminal-sulcus": {
+        "meshName": "Tongue",
+        "position": [
+          -0.3437,
+          0.3317,
+          0.6378
+        ]
+      },
+      "foliate": {
+        "meshName": "Tongue",
+        "position": [
+          0.7626,
+          0.1366,
+          0.4994
+        ]
+      },
+      "lingual-tonsil": {
+        "meshName": "Tongue",
+        "position": [
+          0.2445,
+          0.7595,
+          0.6161
+        ]
+      },
+      "epiglottis": {
+        "meshName": "Epiglottis",
+        "position": [
+          0.0035,
+          1.9,
+          0.2191
+        ]
+      },
+      "genioglossus": {
+        "meshName": "Extrinsic muscles",
+        "position": [
+          0.1017,
+          -0.8636,
+          -0.3626
+        ]
+      }
+    }
+  },
+  "larynx": {
+    "model": "/models/larynx.762dcb46.glb",
+    "bytes": 1642580,
+    "meshes": 11,
+    "triangles": 262054,
+    "anchors": {
+      "thyroid-cartilage": {
+        "meshName": "Thyroid cartilage",
+        "position": [
+          0.0027,
+          0.9835,
+          0.4335
+        ]
+      },
+      "cricoid": {
+        "meshName": "Cricoid cartilage",
+        "position": [
+          0.0986,
+          0.0388,
+          0.3519
+        ]
+      },
+      "hyoid": {
+        "meshName": "Hyoid bone",
+        "position": [
+          0.0055,
+          1.5996,
+          0.4791
+        ]
+      },
+      "epiglottis": {
+        "meshName": "Epiglottis",
+        "position": [
+          0.0005,
+          1.7707,
+          -0.0607
+        ]
+      },
+      "vocal-folds": {
+        "meshName": "Laryngeal folds and mucosa",
+        "position": [
+          0.0821,
+          0.765,
+          -0.0613
+        ]
+      },
+      "vestibular-folds": {
+        "meshName": "Laryngeal folds and mucosa",
+        "position": [
+          0.1511,
+          0.9643,
+          -0.0613
+        ]
+      },
+      "ventricle": {
+        "meshName": "Laryngeal folds and mucosa",
+        "position": [
+          0.3352,
+          0.8647,
+          -0.063
+        ]
+      },
+      "arytenoid": {
+        "meshName": "Arytenoid cartilages",
+        "position": [
+          0.149,
+          0.9311,
+          -0.3077
+        ]
+      },
+      "thyrohyoid-membrane": {
+        "meshName": "Thyrohyoid membrane",
+        "position": [
+          -0.2191,
+          1.3532,
+          0.3396
+        ]
+      },
+      "cricothyroid": {
+        "meshName": "Cricothyroid muscles",
+        "position": [
+          -0.2695,
+          0.2004,
+          0.3285
+        ]
+      },
+      "trachea": {
+        "meshName": "Trachea",
+        "position": [
+          0.0088,
+          -1.0765,
+          0.3199
+        ]
+      }
+    }
+  },
+  "adrenal-glands": {
+    "model": "/models/adrenal-glands.1b76e2f6.glb",
+    "bytes": 725344,
+    "meshes": 5,
+    "triangles": 105074,
+    "anchors": {
+      "right-adrenal": {
+        "meshName": "Right suprarenal gland",
+        "position": [
+          -1.1634,
+          0.4227,
+          0.4201
+        ]
+      },
+      "left-adrenal": {
+        "meshName": "Left suprarenal gland",
+        "position": [
+          0.8192,
+          0.7132,
+          0.2547
+        ]
+      },
+      "cortex": {
+        "meshName": "Left suprarenal gland",
+        "position": [
+          0.9063,
+          0.3213,
+          0.2547
+        ]
+      },
+      "medulla": {
+        "meshName": "Left suprarenal gland",
+        "position": [
+          0.8409,
+          0.1036,
+          0.2547
+        ]
+      },
+      "suprarenal-arteries": {
+        "meshName": "Suprarenal arteries",
+        "position": [
+          -0.966,
+          1.1076,
+          0.1551
+        ]
+      },
+      "right-suprarenal-vein": {
+        "meshName": "Suprarenal and renal veins",
+        "position": [
+          -0.637,
+          0.3651,
+          0.193
+        ]
+      },
+      "left-suprarenal-vein": {
+        "meshName": "Suprarenal and renal veins",
+        "position": [
+          0.678,
+          -0.4251,
+          0.2977
+        ]
+      },
+      "kidney": {
+        "meshName": "Kidneys",
+        "position": [
+          1.4849,
+          -0.5334,
+          0.4398
+        ]
+      },
+      "aorta": {
+        "meshName": "Suprarenal arteries",
+        "position": [
+          0.1816,
+          1.1893,
+          -0.131
+        ]
+      }
+    }
+  },
+  "lumbar-spine": {
+    "model": "/models/lumbar-spine.bbc3a296.glb",
+    "bytes": 1540824,
+    "meshes": 8,
+    "triangles": 231324,
+    "anchors": {
+      "vertebral-body": {
+        "meshName": "Lumbar vertebrae",
+        "position": [
+          -0.6688,
+          0.7919,
+          0.6603
+        ]
+      },
+      "spinous-process": {
+        "meshName": "Lumbar vertebrae",
+        "position": [
+          0.6821,
+          0.3349,
+          0.6603
+        ]
+      },
+      "annulus": {
+        "meshName": "Intervertebral discs",
+        "position": [
+          -0.951,
+          -0.2917,
+          0.6603
+        ]
+      },
+      "nucleus": {
+        "meshName": "Intervertebral discs",
+        "position": [
+          -0.6272,
+          0.4143,
+          0.6603
+        ]
+      },
+      "cauda-equina": {
+        "meshName": "Cauda equina and nerve roots",
+        "position": [
+          -0.0084,
+          0.0067,
+          0.6014
+        ]
+      },
+      "nerve-root": {
+        "meshName": "Cauda equina and nerve roots",
+        "position": [
+          -0.1947,
+          0.2119,
+          -0.2418
+        ]
+      },
+      "anterior-ligament": {
+        "meshName": "Longitudinal ligaments",
+        "position": [
+          -1.1141,
+          0.4489,
+          0.6603
+        ]
+      },
+      "ligamentum-flavum": {
+        "meshName": "Ligamenta flava",
+        "position": [
+          0.1104,
+          0.276,
+          0.6603
+        ]
+      },
+      "sacrum": {
+        "meshName": "Lumbar vertebrae",
+        "position": [
+          -0.4383,
+          -1.4139,
+          0.6603
+        ]
+      }
+    }
+  },
+  "hand": {
+    "model": "/models/hand.a19be2a7.glb",
+    "bytes": 685936,
+    "meshes": 8,
+    "triangles": 93488,
+    "anchors": {
+      "scaphoid": {
+        "meshName": "Scaphoid",
+        "position": [
+          -0.0215,
+          0.7582,
+          -0.3305
+        ]
+      },
+      "carpals": {
+        "meshName": "Carpal bones",
+        "position": [
+          0.4316,
+          0.5108,
+          -0.2121
+        ]
+      },
+      "metacarpals": {
+        "meshName": "Metacarpals",
+        "position": [
+          0.1528,
+          -0.3021,
+          -0.1902
+        ]
+      },
+      "phalanges": {
+        "meshName": "Phalanges",
+        "position": [
+          0.0047,
+          -1.6553,
+          0.6094
+        ]
+      },
+      "thumb": {
+        "meshName": "Metacarpals",
+        "position": [
+          -0.3938,
+          0.2751,
+          -0.0329
+        ]
+      },
+      "radius": {
+        "meshName": "Distal radius",
+        "position": [
+          -0.0732,
+          1.0725,
+          -0.405
+        ]
+      },
+      "ulna": {
+        "meshName": "Distal ulna",
+        "position": [
+          0.6346,
+          1.2261,
+          -0.5058
+        ]
+      },
+      "flexor-retinaculum": {
+        "meshName": "Flexor retinaculum",
+        "position": [
+          0.241,
+          0.5955,
+          0.1794
+        ]
+      },
+      "median-nerve": {
+        "meshName": "Median nerve",
+        "position": [
+          0.2194,
+          1.143,
+          -0.0876
+        ]
+      }
+    }
+  }
+}

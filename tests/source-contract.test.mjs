@@ -10,44 +10,64 @@ import { MeshoptDecoder } from "meshoptimizer";
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
 
-test("refined delivery assets decode, match their hashes, and retain labelled structures", async () => {
+/** Splits a content module into its specimen entries, keyed by organ id. */
+function specimenSections(source) {
+  return Object.fromEntries(source.split(/\n  \{\n/).slice(1).map((section) => [section.match(/id: "([a-z-]+)"/)[1], section]));
+}
+
+test("Three.js specimens decode, match the manifest, and anchor every hotspot", async () => {
   await MeshoptDecoder.ready;
   const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({"meshopt.decoder": MeshoptDecoder});
-  const manifest = JSON.parse(await read("app/lib/refined-models.json"));
-  const additional = await read("app/lib/additional-organs.ts");
-  const detailed = JSON.parse(await read("app/lib/detailed-studies.json"));
-  assert.equal(Object.keys(manifest).length, 15);
+  const manifest = JSON.parse(await read("app/lib/three-models.json"));
+  const sections = {
+    ...specimenSections(await read("app/lib/expanded-organs.ts")),
+    ...specimenSections(await read("app/lib/additional-organs.ts")),
+  };
+  assert.equal(Object.keys(manifest).length, 21);
+  assert.deepEqual(Object.keys(manifest).sort(), Object.keys(sections).sort());
   for (const [id, record] of Object.entries(manifest)) {
-    const bytes = await readFile(new URL(`public${record.url}`, root));
+    assert.match(record.model, new RegExp(`^/models/${id}\\.[a-f0-9]{8}\\.glb$`));
+    const bytes = await readFile(new URL(`public${record.model}`, root));
     assert.equal(bytes.length, record.bytes);
-    assert.ok(record.bytes < (id === "muscles" ? 7_000_000 : id === "skeleton" ? 4_000_000 : detailed[id] ? 2_000_000 : 700_000), `${id}: transfer budget`);
-    assert.ok(record.url.includes(createHash("sha256").update(bytes).digest("hex").slice(0,8)));
+    assert.ok(record.bytes < 4_000_000, `${id}: transfer budget`);
+    assert.ok(record.model.includes(createHash("sha256").update(bytes).digest("hex").slice(0, 8)), `${id}: content hash`);
+    const glb = await readGlbJson(`public${record.model}`);
+    assert.ok(glb.extensionsRequired.includes("EXT_meshopt_compression"), `${id} should use compressed delivery`);
     const doc = await io.readBinary(bytes);
-    const nodes = doc.getRoot().listNodes().filter(node => node.getMesh());
+    const nodes = doc.getRoot().listNodes().filter((node) => node.getMesh());
     assert.equal(nodes.length, record.meshes);
+    assert.ok(record.meshes >= 4, `${id} should contain individually selectable structures`);
     const bounds = getBounds(doc.getRoot().listScenes()[0]);
     assert.ok([...bounds.min, ...bounds.max].every(Number.isFinite));
-    assert.ok(bounds.max.some((v,i) => v - bounds.min[i] > 0));
+    const extent = Math.max(...bounds.max.map((v, i) => v - bounds.min[i]));
+    assert.ok(extent > 1 && extent < 10, `${id} should be authored at viewer scale`);
+    let triangles = 0;
     for (const mesh of doc.getRoot().listMeshes()) for (const primitive of mesh.listPrimitives()) {
       const positions = primitive.getAttribute("POSITION");
       assert.ok(positions.getCount() > 0);
       assert.ok(positions.getArray().every(Number.isFinite));
-      assert.ok(primitive.getIndices().getArray().every(index => index < positions.getCount()));
+      assert.ok(primitive.getAttribute("NORMAL"), `${id}: normals`);
+      assert.ok(primitive.getAttribute("COLOR_0"), `${id}: painted vertex colour`);
+      const indices = primitive.getIndices().getArray();
+      assert.ok(indices.every((index) => index < positions.getCount()));
+      triangles += indices.length / 3;
     }
-    if (detailed[id]) {
-      const names = new Set(nodes.map(node => node.getName()));
-      assert.ok(detailed[id].hotspots.length >= 4);
-      for (const h of detailed[id].hotspots) assert.ok(names.has(h.meshName), `${id}: ${h.meshName} exists`);
-      assert.equal(detailed[id].model,record.url);
-      assert.ok(detailed[id].note.length > 80);
-    } else if (["spleen", "esophagus", "knee"].includes(id)) {
-      const section = additional.split(`id:'${id}'`)[1].split(/\n  },/)[0];
-      const names = new Set(nodes.map(node => node.getName()));
-      const anchors = [...section.matchAll(/meshName:'([^']+)'/g)];
-      assert.equal(anchors.length,4);
-      for (const [,name] of anchors) assert.ok(names.has(name), `${id}: ${name} anchor exists`);
-      for (const art of ["thumb", "organ"]) await access(new URL(`public/anatomy/${id}/${art}.webp`, root));
+    assert.equal(triangles, record.triangles);
+    assert.ok(triangles > 50_000 && triangles < 500_000, `${id} should be detailed within a bounded budget`);
+    const names = new Set(nodes.map((node) => node.getName()));
+    const hotspots = [...sections[id].split("hotspots: spots(")[1].matchAll(/\["([a-z-]+)", "/g)].map((match) => match[1]);
+    assert.ok(hotspots.length >= 7, `${id} should label its structures`);
+    for (const hotspot of hotspots) {
+      const anchor = record.anchors[hotspot];
+      assert.ok(anchor, `${id}: ${hotspot} has a built anchor`);
+      assert.ok(names.has(anchor.meshName), `${id}: ${anchor.meshName} exists`);
+      assert.equal(anchor.position.length, 3);
+      assert.ok(anchor.position.every((v) => Number.isFinite(v) && Math.abs(v) < 2.5));
     }
+    assert.ok(sections[id].match(/modelNote: "([^"]+)"/)?.[1].length > 80, `${id}: model note`);
+    const artwork = await readdir(new URL(`public/anatomy/${id}/`, root));
+    const expected = /specimenOnly: true/.test(sections[id]) ? ["organ.webp", "thumb.webp"] : ["compare.webp", "location.webp", "microscopic.webp", "organ.webp", "thumb.webp"];
+    for (const art of expected) assert.ok(artwork.includes(art), `${id}: ${art}`);
   }
 });
 
@@ -112,56 +132,37 @@ test("persists anonymous learner state and bounded analytics in D1", async () =>
 });
 
 test("uses versioned models, modern Three timing, and durable cache policy", async () => {
-  const [data, idsSource, expanded, procedural, loader, viewer, worker, securityHeaders, models] = await Promise.all([
+  const [data, idsSource, expanded, additional, loader, viewer, worker, securityHeaders, models] = await Promise.all([
     read("app/lib/anatomy-data.ts"),
     read("app/lib/organ-ids.ts"),
     read("app/lib/expanded-organs.ts"),
-    read("app/lib/three/procedural-models.ts"),
+    read("app/lib/additional-organs.ts"),
     read("app/lib/three/loaders.ts"),
     read("app/lib/three/viewer.ts"),
     read("worker/index.ts"),
     read("security-headers.ts"),
     readdir(new URL("public/models/", root)),
   ]);
-  assert.equal(models.length, 24);
+  assert.equal(models.length, 30);
   for (const model of models) assert.match(model, /^[a-z-]+\.[a-f0-9]{8}\.glb$/);
   const organIds = [...idsSource.matchAll(/^\s+"([a-z-]+)",$/gm)].map((match) => match[1]);
-  assert.equal(organIds.length, 24);
-  assert.equal(new Set(organIds).size, 24);
+  assert.equal(organIds.length, 30);
+  assert.equal(new Set(organIds).size, 30);
+  for (const id of organIds) assert.equal(models.filter((model) => model.startsWith(`${id}.`)).length, 1, `${id} should ship exactly one model`);
   const expandedIds = [...expanded.matchAll(/^\s+id: "([a-z-]+)",$/gm)].map((match) => match[1]);
   assert.equal(expandedIds.length, 12);
   assert.equal([...expanded.matchAll(/^\s+illustrated: true,$/gm)].length, 12);
   assert.doesNotMatch(expanded, /illustrated: false/);
-  for (const id of expandedIds) {
-    const modelMatch = expanded.match(new RegExp(`id: "${id}"[\\s\\S]*?model: "(/models/${id}\\.[a-f0-9]{8}\\.glb)"`));
-    assert.ok(modelMatch, `${id} should use a versioned GLB model`);
-    await access(new URL(`public${modelMatch[1]}`, root));
-    const glb = await readGlbJson(`public${modelMatch[1]}`);
-    const vertexCount = (glb.meshes ?? []).reduce(
-      (total, mesh) => total + mesh.primitives.reduce(
-        (meshTotal, primitive) => meshTotal + (glb.accessors[primitive.attributes.POSITION]?.count ?? 0),
-        0,
-      ),
-      0,
-    );
-    assert.ok(glb.meshes.length >= 10, `${id} should contain detailed, individually selectable anatomy`);
-    assert.ok(vertexCount > 1000 && vertexCount < 650_000, `${id} should retain anatomy within a bounded mesh budget`);
-    assert.ok(glb.extensionsRequired.includes('EXT_meshopt_compression'), `${id} should use compressed delivery`);
-    const detailed = JSON.parse(await read("app/lib/detailed-studies.json"));
-    if (id !== "muscles" && !detailed[id]) assert.ok(glb.images.length >= 3, `${id} should embed color, normal, and roughness imagery`);
-    else assert.ok(glb.materials.length > 0, "repaired muscles use UV-independent matte anatomy colors");
-    if (id === "skeleton") assert.ok(glb.meshes.length >= 80, "skeleton should retain the full BodyParts3D bone set");
-    if (id === "muscles") assert.ok(glb.meshes.length >= 120, "muscles should retain the registered scan-based full-body system");
-    assert.match(procedural, new RegExp(`(?:"${id}"|${id.replaceAll("-", "")})`));
-    const artwork = await readdir(new URL(`public/anatomy/${id}/`, root));
-    assert.deepEqual(artwork.sort(), ["compare.webp", "location.webp", "microscopic.webp", "organ.webp", "thumb.webp"]);
+  assert.doesNotMatch(additional, /illustrated: false/);
+  for (const source of [expanded, additional]) {
+    assert.match(source, /content\.map\(withThreeModel\)/);
+    assert.doesNotMatch(source, /model: "|procedural:/);
   }
-  assert.doesNotMatch(expanded, /procedural:/);
   assert.doesNotMatch(loader, /buildProceduralModel|startsWith\("procedural:"\)/);
-  assert.match(procedural, /new THREE\.MeshPhysicalMaterial/);
-  assert.match(procedural, /function organicize/);
   assert.doesNotMatch(data, /\/models\/[a-z]+\.glb/);
+  assert.doesNotMatch(data, /detailed-studies/);
   assert.match(data, /\.\.\.expandedOrgans/);
+  assert.match(data, /\.\.\.additionalOrgans/);
   assert.match(viewer, /new THREE\.Timer\(\)/);
   assert.doesNotMatch(viewer, /new THREE\.Clock\(\)/);
   assert.match(worker, /new Set<string>\(ORGAN_IDS\)/);

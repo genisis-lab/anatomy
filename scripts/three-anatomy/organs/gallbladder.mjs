@@ -50,7 +50,6 @@ export function build() {
   const bileDuctPath = [[-0.42, 0.72, 0.0], [-0.44, 0.2, -0.02], [-0.5, -0.45, -0.05], [-0.62, -1.05, -0.06], [-0.82, -1.36, -0.05]];
   const commonBile = curveTube(bileDuctPath, (t) => 0.07 - 0.02 * t, 50);
   const pancreaticDuct = curveTube([[0.05, -1.52, -0.06], [-0.3, -1.46, -0.05], [-0.6, -1.4, -0.05], [-0.82, -1.38, -0.05]], (t) => 0.026 + 0.012 * t, 40);
-  const bileFields = [cysticDuct, hepaticRight, hepaticLeft, commonHepatic, commonBile];
 
   // --- descending duodenum, opened anteriorly to show the major papilla
   const duoAxis = sampleCurve([[-0.72, 0.1, -0.12], [-1.08, -0.18, 0.0], [-1.18, -0.9, 0.02], [-1.08, -1.66, 0.0], [-0.66, -1.98, -0.06], [-0.3, -2.02, -0.1]], 70);

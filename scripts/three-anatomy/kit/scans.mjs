@@ -104,7 +104,7 @@ export function axialCoordinate(geometry) {
   const p = geometry.attributes.position.array;
   const count = p.length / 3;
   const mean = new THREE.Vector3();
-  for (let v = 0; v < count; v += 1) mean.x += p[v * 3], mean.y += p[v * 3 + 1], mean.z += p[v * 3 + 2];
+  for (let v = 0; v < count; v += 1) mean.add(new THREE.Vector3(p[v * 3], p[v * 3 + 1], p[v * 3 + 2]));
   mean.multiplyScalar(1 / count);
   const c = [0, 0, 0, 0, 0, 0];
   for (let v = 0; v < count; v += 1) {

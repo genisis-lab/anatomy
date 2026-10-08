@@ -1,63 +1,61 @@
 # Third-party anatomy assets
 
-## Current detailed studies (September 2026)
+## Three.js specimens (October 2026)
 
-The detailed-study manifest (`app/lib/detailed-studies.json`) overrides the
-ear, spinal cord, bladder, thyroid, isolated spleen, lymphatic, female and male
-reproductive, and gallbladder models. The ear, spinal cord, bladder, thyroid,
-spleen, male reproductive and gallbladder replacements are original
-reference-guided Blender teaching geometry, released under CC BY-SA 4.0.
-The microscopic and cross-section features are enlarged schematic examples,
-not exact counts, scans, or clinically validated patient anatomy.
+Twenty-one specimens are built by `scripts/three-anatomy/` and listed in
+`app/lib/three-models.json`. The nine core organ models (heart, brain, lungs,
+liver, kidneys, eyeball, intestine, pancreas, skin) are unchanged.
 
-The regional lymphoid model derives from **Z-Anatomy — The libre 3D atlas of
-anatomy — CC-BY-SA 4.0**, Gauthier Kervyn and contributors, based on
-**BodyParts3D — The Database Center for Life Science — CC-BY-SA 2.1 Japan**.
-Source: https://github.com/Z-Anatomy/Models-of-human-anatomy (Startup.blend,
-2023-05-02). Modifications: select regional lymphoid structures; bake
-transforms; rebuild matte materials; normalize; add an original enlarged node
-cutaway; compress. This derivative and its renders remain CC BY-SA 4.0.
-The NC-restricted inner-ear and kidney meshes are not included.
+### Original teaching geometry
 
-Female reproductive geometry is by **Kristen Browne and Heidi Schlehlein**,
-*3D Reference Organ Set for Female, v1.5*, HuBMAP/Human Reference Atlas, based
-on the National Library of Medicine Visible Human Female. CC BY 4.0.
-https://doi.org/10.48539/HBM352.BTSQ.586
-https://cdn.humanatlas.io/digital-objects/ref-organ/united-female/v1.5/metadata.json
-Modifications: select uterus/ovaries/tubes/supporting ligaments/uterine vessels,
-preserve registration, normalize, render, and compress. Histological layers
-are not exposed. Previews inherit their source model licenses.
+The stomach, ear, spinal cord, bladder, thyroid, female and male reproductive,
+gallbladder, airway and diaphragm, spleen, esophagus, tooth, tongue, larynx and
+adrenal gland specimens are original procedural geometry authored for Anatomy
+Atelier. They are released under CC BY-SA 4.0. The knee's cartilage,
+menisci, ligaments and extensor mechanism, the lumbar spine's dural sac, cauda
+equina and ligaments, the hand's flexor retinaculum and median nerve, and the
+lymphatic vessels and nodes are original geometry under the same terms. Cut-away
+windows, layer thicknesses, vessel calibre and microscopic features are enlarged
+or simplified for study. They are not scans, histology or clinically validated
+patient anatomy.
 
-Earlier provenance below applies to models not replaced by this manifest.
+### BodyParts3D derivatives
 
-The expanded interactive specimens include geometry derived from BodyParts3D:
+The skeleton, muscles, knee bones, hand bones, lumbar vertebrae, discs and
+sacrum, and the lymphatic specimen's skeletal frame derive from BodyParts3D:
 
 > BodyParts3D, © The Database Center for Life Science, licensed under Creative Commons Attribution-Share Alike 2.1 Japan.
 
 Source: <https://dbarchive.biosciencedbc.jp/en/bodyparts3d/>
 
-Mirror and conversion tooling: <https://github.com/Kevin-Mattheus-Moerman/BodyParts3D>
+STL mirror used by the build: <https://github.com/Kevin-Mattheus-Moerman/BodyParts3D>
 
-The derived GLB files remain available under the same CC BY-SA license. Application code is licensed separately under the repository's software license.
+Modifications: the selected FMA surfaces (`scripts/three-anatomy/kit/bodyparts3d.json`)
+were Taubin-smoothed, simplified and, for the knee, hand and lumbar spine, sectioned
+with filled cut faces. They were then vertex-painted, combined with the original
+geometry above, normalized and meshopt-compressed. These derivative GLBs remain
+available under CC BY-SA 2.1 Japan. Application code is licensed separately under
+the repository's software license.
 
-## Blender refinements and new studies
+Rendered specimen previews (`public/anatomy/<id>/organ.webp`, `thumb.webp`)
+inherit their model's license. No histology images are claimed.
 
-The twelve expanded specimens are surface-refined derivatives with reduced
-normal-map intensity, smooth shading, selective decimation, and meshopt/WebP
-delivery compression. Full-body muscle scan seams are voxel-repaired per named structure and
-decimated, retaining the source material colors with matte, UV-independent
-surfaces. The isolated spleen derives from the existing lymphatic
-model; its added vessels are schematic. The right knee derives from the registered
-right femur, tibia, fibula, and patella in the skeleton, with sectioned shafts and
-repaired scan seams. These derivatives retain CC BY-SA 2.1 Japan.
+### Retired assets
 
-The esophagus wall cutaway is original procedural educational geometry authored
-in `scripts/blender-atlas.py`; wall thickness is exaggerated and sphincters are
-omitted. It is released under CC BY-SA 2.1 Japan as well. Rendered specimen
-previews inherit their model's license. No new histology images are claimed.
+Earlier Blender-refined BodyParts3D derivatives, the Z-Anatomy regional lymphoid
+model and the HuBMAP female reference organ set are no longer shipped. These
+specimens were rebuilt as described above. The supplementary microscopic,
+location and comparison illustrations kept for the stomach, skeleton, muscles
+and airway are unchanged.
 
-Learning context was cross-checked against OpenStax Anatomy and Physiology:
+## References
+
+Anatomical relationships and learning context were cross-checked against OpenStax Anatomy and Physiology:
 
 - [Lymphatic and immune anatomy](https://openstax.org/books/anatomy-and-physiology/pages/21-1-anatomy-of-the-lymphatic-and-immune-systems)
 - [Mouth, pharynx, and esophagus](https://openstax.org/books/anatomy-and-physiology-2e/pages/23-3-the-mouth-pharynx-and-esophagus)
 - [Selected synovial joints](https://openstax.org/books/anatomy-and-physiology/pages/9-6-anatomy-of-selected-synovial-joints)
+- [The endocrine system: adrenal glands](https://openstax.org/books/anatomy-and-physiology-2e/pages/17-6-the-adrenal-glands)
+- [Organs and structures of the respiratory system](https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system)
+- [The vertebral column](https://openstax.org/books/anatomy-and-physiology-2e/pages/7-3-the-vertebral-column)
+- [Bones of the upper limb](https://openstax.org/books/anatomy-and-physiology-2e/pages/8-2-bones-of-the-upper-limb)

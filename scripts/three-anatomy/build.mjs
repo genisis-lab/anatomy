@@ -38,8 +38,8 @@ mkdirSync(draft ? draftDirectory : modelDirectory, { recursive: true });
 
 for (const id of ids) {
   console.log(`\n${id}`);
-  const module = await import(pathToFileURL(join(organDirectory, `${id}.mjs`)).href);
-  const specimen = await module.build();
+  const builder = await import(pathToFileURL(join(organDirectory, `${id}.mjs`)).href);
+  const specimen = await builder.build();
   const result = await bakeSpecimen(specimen);
   if (draft) {
     writeFileSync(join(draftDirectory, `${id}.glb`), result.bytes);

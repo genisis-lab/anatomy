@@ -23,6 +23,12 @@ export const ORGAN_IDS = [
   "spleen",
   "esophagus",
   "knee",
+  "tooth",
+  "tongue",
+  "larynx",
+  "adrenal-glands",
+  "lumbar-spine",
+  "hand",
 ] as const;
 
 export type OrganId = (typeof ORGAN_IDS)[number];

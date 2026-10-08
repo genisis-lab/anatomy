@@ -46,6 +46,12 @@ test("server-renders the complete Anatomy Atelier experience", async () => {
     "Testes &amp; Prostate",
     "Gallbladder",
     "Airway &amp; Diaphragm",
+    "Tooth",
+    "Tongue",
+    "Larynx",
+    "Adrenal Glands",
+    "Lumbar Spine",
+    "Hand",
   ]) assert.match(html, new RegExp(specimen));
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
 });

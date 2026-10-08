@@ -185,13 +185,13 @@ export function buildReviewQueue(organs: Organ[], learner: LearnerState): Review
 
 const pathwaySequences: Partial<Record<OrganId, OrganId[]>> = {
   heart: ["heart", "lungs", "brain", "kidneys"],
-  lungs: ["airway-diaphragm", "lungs", "heart"],
-  stomach: ["esophagus", "stomach", "intestine", "liver", "gallbladder", "pancreas"],
-  liver: ["esophagus", "stomach", "intestine", "liver", "gallbladder", "pancreas"],
+  lungs: ["larynx", "airway-diaphragm", "lungs", "heart"],
+  stomach: ["tooth", "tongue", "esophagus", "stomach", "intestine", "liver", "gallbladder", "pancreas"],
+  liver: ["tooth", "tongue", "esophagus", "stomach", "intestine", "liver", "gallbladder", "pancreas"],
   kidneys: ["kidneys", "bladder"],
   brain: ["brain", "spinal-cord", "muscles"],
-  pancreas: ["pancreas", "liver", "thyroid"],
-  skeleton: ["skeleton", "knee", "muscles", "spinal-cord"],
+  pancreas: ["pancreas", "thyroid", "adrenal-glands", "liver"],
+  skeleton: ["skeleton", "lumbar-spine", "hand", "knee", "muscles", "spinal-cord"],
   muscles: ["brain", "spinal-cord", "muscles", "skeleton"],
   "female-reproductive": ["female-reproductive", "male-reproductive"],
   "male-reproductive": ["male-reproductive", "female-reproductive"],

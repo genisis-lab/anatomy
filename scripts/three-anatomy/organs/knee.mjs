@@ -2,7 +2,7 @@ import { Specimen } from "../kit/bake.mjs";
 import { curveTube, stretch } from "../kit/sdf.mjs";
 import { fbm3, simplex3 } from "../kit/noise.mjs";
 import { color, mix, smoothstep, tissue } from "../kit/paint.mjs";
-import { clipMesh, merge, taperedTube } from "../kit/geometry.mjs";
+import { clipMesh, taperedTube } from "../kit/geometry.mjs";
 import { bodyFrame, ensureScans, refine, scan } from "../kit/scans.mjs";
 
 // The right knee in extension, anterior view: registered BodyParts3D bones

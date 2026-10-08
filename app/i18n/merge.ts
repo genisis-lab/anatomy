@@ -3,7 +3,7 @@ import type { OrganContentDictionary } from "./types";
 
 export type { Hotspot, Organ };
 
-/** Merge translated prose over the complete 21-specimen atlas. Content not
+/** Merge translated prose over the complete 30-specimen atlas. Content not
  * yet translated remains useful English instead of disappearing. */
 export function buildOrgans(content: OrganContentDictionary): Organ[] {
   return baseOrgans.map((organ) => {
