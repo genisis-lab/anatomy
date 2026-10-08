@@ -71,15 +71,15 @@ export function thyroidCartilage({ y0 = 0.75, y1 = 1.45, angle = 0.9, thickness 
 }
 
 /** Signet-ring cricoid: a narrow anterior arch and a tall posterior lamina. */
-export function cricoid({ y0 = 0.46, radius = 0.33, thickness = 0.06 } = {}) {
+export function cricoid({ y0 = 0.46, radius = 0.33, thickness = 0.06, front = 0.09, back: lamina = 0.3 } = {}) {
   const field = {
     d: (x, y, z) => {
       const r = Math.abs(Math.hypot(x, z * 1.05) - radius) - thickness / 2;
       const back = smoothstep(0.1, -0.85, z / radius);
-      const top = y0 + 0.09 + back * 0.3;
+      const top = y0 + front + back * lamina;
       return Math.max(r, y0 - y, y - top);
     },
-    b: [-radius - 0.1, y0 - 0.1, -radius - 0.1, radius + 0.1, y0 + 0.5, radius + 0.1],
+    b: [-radius - 0.1, y0 - 0.1, -radius - 0.1, radius + 0.1, y0 + front + lamina + 0.1, radius + 0.1],
   };
   const paint = tissue({ base: "#e7d9c6", dark: "#c2a98f", light: "#f9f1e5", seed: 403, scale: 4, crestAmount: 0.5 });
   return { field, paint };

@@ -209,6 +209,7 @@ function smin(a, b, k) {
 export function smoothUnion(k, ...items) {
   const list = items.flat().filter(Boolean);
   if (list.length === 1) return list[0];
+  if (!(k > 0)) return union(list);
   return {
     d: (x, y, z) => {
       let best = INF;

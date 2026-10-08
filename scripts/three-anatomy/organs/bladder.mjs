@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { Specimen } from "../kit/bake.mjs";
-import { curveTube, displace, ellipsoid, intersect, plane, smoothSubtract, smoothUnion, subtract } from "../kit/sdf.mjs";
+import { curveTube, displace, ellipsoid, intersect, plane, smoothSubtract, smoothUnion, subtract, union } from "../kit/sdf.mjs";
 import { fbm3, ridged3, simplex3 } from "../kit/noise.mjs";
 import { color, mix, smoothstep, tissue } from "../kit/paint.mjs";
 import { growVessels, merge, taperedTube, vesselGeometry } from "../kit/geometry.mjs";
@@ -96,7 +96,7 @@ export function build() {
   for (const side of [1, -1]) {
     ureters.push(curveTube([[side * 0.95, 1.85, -0.7], [side * 0.92, 1.1, -0.82], [side * 0.72, 0.15, -0.88], [side * 0.5, -0.32, -0.74], [side * 0.38, -0.42, -0.62]], 0.06, 50));
   }
-  s.field("Ureters", intersect(smoothUnion(0.0, ...ureters), plane([0, 1, 0], 1.8)), {
+  s.field("Ureters", intersect(union(ureters), plane([0, 1, 0], 1.8)), {
     material: "mucosa",
     caps: [{ normal: new THREE.Vector3(0, 1, 0), offset: 1.8 }],
     simplify: { ratio: 0.45, error: 0.001 },
