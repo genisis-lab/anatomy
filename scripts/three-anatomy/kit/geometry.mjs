@@ -337,7 +337,7 @@ export function clipMesh(geometry, normalArray, offset, { spacing } = {}) {
     // the flat section vertices to carry marrow, lamellae and other painting.
     const bounds = new THREE.Box2().setFromPoints(contour);
     const size = bounds.getSize(new THREE.Vector2());
-    const step = spacing ?? Math.max(size.x, size.y) / 36;
+    const step = spacing ?? Math.max(size.x, size.y) / 64;
     const inside = (q) => {
       let hit = false;
       for (let i = 0, j = contour.length - 1; i < contour.length; j = i++) {
@@ -360,7 +360,8 @@ export function clipMesh(geometry, normalArray, offset, { spacing } = {}) {
     if (step > 0) {
       for (let gx = bounds.min.x + step * 0.5; gx < bounds.max.x; gx += step) {
         for (let gy = bounds.min.y + step * 0.5; gy < bounds.max.y; gy += step) {
-          const q = new THREE.Vector2(gx + (Math.sin(gy * 91.7) * 0.15) * step, gy);
+          const jx = Math.sin(gx * 127.1 + gy * 311.7) * 43758.5453, jy = Math.sin(gx * 269.5 + gy * 183.3) * 43758.5453;
+          const q = new THREE.Vector2(gx + (jx - Math.floor(jx) - 0.5) * 0.5 * step, gy + (jy - Math.floor(jy) - 0.5) * 0.5 * step);
           if (inside(q) && edgeDistance(q) > step * 0.45) steiner.push(q);
         }
       }

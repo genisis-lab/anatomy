@@ -56,8 +56,8 @@ export async function build() {
     if (!c.cap) return bone(c);
     if (geometry.userData.rim[c.index] < 0.05) return mix(color("#f2e8d2"), color("#e3d1b0"), marrow(c.x * 30, c.y * 30, c.z * 30) * 0.5 + 0.5);
     // Cancellous bone: pale trabeculae around red marrow spaces.
-    const t = trabecular(c.x * 26, c.y * 26, c.z * 26);
-    const strut = 1 - smoothstep(0.0, 0.07, t.f2 - t.f1);
+    const t = trabecular(c.x * 13, c.y * 13, c.z * 13);
+    const strut = 1 - smoothstep(0.0, 0.12, t.f2 - t.f1);
     return mix(mix(color("#cf8d74"), color("#b8644f"), marrow(c.x * 10, c.y * 10, c.z * 10) * 0.5 + 0.5), color("#f0e2c6"), strut * 0.85);
   };
   const columnGeometry = merge([...vertebrae, sacrum]);
@@ -81,8 +81,8 @@ export async function build() {
       if (!c.cap) return tissue({ base: "#dfe2d6", dark: "#b6bba8", light: "#f5f6ef", seed: 255, scale: 8 })(c);
       const depth = discGeometry.userData.depth[c.index];
       if (depth > 0.5) return mix(color("#e9eee6"), color("#cdd8d4"), jelly(c.x * 12, c.y * 12, c.z * 12) * 0.5 + 0.5);
-      const lamella = 0.5 + 0.5 * Math.sin(depth * 70);
-      return mix(color("#e8e3cf"), color("#c9c0a3"), lamella * 0.6);
+      const lamella = 0.5 + 0.5 * Math.sin(depth * 40);
+      return mix(color("#efe8d2"), color("#b9aa83"), lamella * 0.75);
     },
     shading: { ao: 0.8, cavity: 0.5 },
   });
